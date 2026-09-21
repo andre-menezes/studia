@@ -25,6 +25,7 @@ Orientar a leitura da documentação arquitetural da Studia.
 | Contrato API                         | ADR-0007 + `docs/api/`                |
 | i18n                                 | `i18n.md`                             |
 | Stub HTTP local de DX                | ADR-0008 + `tools/mock-server/`       |
+| UI / componentes shared              | `ui.md`                               |
 | Backlog de decisões                  | `open-decisions.md`                   |
 
 ## Backend (direção, ainda não implementado)
@@ -37,9 +38,9 @@ Orientar a leitura da documentação arquitetural da Studia.
 
 Em ordem sugerida:
 
-1. Guideline de UI/componentes (mínima)
-2. FEATURE de edição de Study / dashboard (após FEATURE-0001)
-3. Estratégia de testes + coverage mínimo
+1. FEATURE de edição de Study / dashboard (após FEATURE-0001)
+2. Estratégia de testes + coverage mínimo
+3. Layouts / navegação (guideline ou FEATURE dashboard)
 
 ## Fonte de premissas
 

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { AppButton } from "@/shared/ui";
+
 defineProps<{
   successTitle: string;
   successSubtitle: string;
@@ -24,19 +26,11 @@ const emit = defineEmits<{
       <h2 class="text-lg font-semibold text-foreground">{{ successTitle }}</h2>
       <p class="text-sm text-muted">{{ successSubtitle }}</p>
     </div>
-    <button
-      type="button"
-      class="w-full rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-on-accent transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-      @click="emit('view')"
-    >
+    <AppButton block @click="emit('view')">
       {{ viewLabel }}
-    </button>
-    <button
-      type="button"
-      class="text-sm font-medium text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-      @click="emit('createAnother')"
-    >
+    </AppButton>
+    <AppButton variant="text" color="accent" @click="emit('createAnother')">
       {{ createAnotherLabel }}
-    </button>
+    </AppButton>
   </div>
 </template>

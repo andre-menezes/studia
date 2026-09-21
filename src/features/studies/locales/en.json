@@ -6,6 +6,12 @@
       "create": "Create Study",
       "empty": "You haven't created a Study yet. Start by organizing your first one."
     },
+    "status": {
+      "ACTIVE": "Active",
+      "PAUSED": "Paused",
+      "COMPLETED": "Completed",
+      "ARCHIVED": "Archived"
+    },
     "wizard": {
       "title": "New Study",
       "step": "Step {step} of {total}",

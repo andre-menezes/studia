@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { AppBadge, type AppTone } from "@/shared/ui";
 import type { StudyStatus } from "../domain/study";
 
@@ -8,6 +9,8 @@ const props = defineProps<{
   objective: string;
   status: StudyStatus;
 }>();
+
+const { t } = useI18n();
 
 const statusTone = computed<AppTone>(() => {
   switch (props.status) {
@@ -23,6 +26,10 @@ const statusTone = computed<AppTone>(() => {
       return "muted";
   }
 });
+
+const statusLabel = computed(() =>
+  t(`studies.status.${props.status}`, props.status),
+);
 </script>
 
 <template>
@@ -34,7 +41,7 @@ const statusTone = computed<AppTone>(() => {
         <p class="font-medium text-foreground">{{ title }}</p>
         <p class="mt-0.5 text-sm text-muted">{{ objective }}</p>
       </div>
-      <AppBadge :tone="statusTone">{{ status }}</AppBadge>
+      <AppBadge :tone="statusTone">{{ statusLabel }}</AppBadge>
     </div>
   </li>
 </template>

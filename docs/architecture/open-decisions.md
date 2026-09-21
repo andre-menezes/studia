@@ -27,6 +27,7 @@ Substituir a lista §56–57 da discussão inicial por um backlog vivo de decis�
 | Contrato API OpenAPI + error codes | ADR-0007 + `docs/api/` |
 | i18n (organização e erros → chaves) | `docs/architecture/i18n.md` |
 | Stub HTTP local de DX (`tools/mock-server`) | ADR-0008 |
+| UI / componentes shared (`App*`, Storybook) | `docs/architecture/ui.md` |
 
 ## Abertas (próximos passos sugeridos)
 
@@ -36,13 +37,12 @@ Ordenado pela sequência útil de documentação:
 |---|---|---|
 | 1 | Sessões multi-dispositivo / revogação (UI) | ADR (pode adiar pós-MVP) |
 | 2 | Período exato da cota mensal de criações | ADR de billing/usage |
-| 3 | Critérios de composables e componentes | guideline UI |
-| 4 | Layouts, navegação, design tokens, breakpoints | guideline + FEATURE dashboard |
-| 5 | Sistema de componentes / a11y / SEO | guidelines |
-| 6 | Estratégia de testes + coverage mínimo | guideline `testing.md` |
-| 7 | CI/CD + versionamento do app | guideline / ADR |
-| 8 | Modelo definitivo de Task / Note | FEATURE ou domain spec |
-| 9 | Necessidade de StudySession no roadmap | product decision |
+| 3 | Layouts, navegação, design tokens, breakpoints | guideline + FEATURE dashboard |
+| 4 | a11y aprofundada / SEO | guidelines |
+| 5 | Estratégia de testes + coverage mínimo | guideline `testing.md` |
+| 6 | CI/CD + versionamento do app | guideline / ADR |
+| 7 | Modelo definitivo de Task / Note | FEATURE ou domain spec |
+| 8 | Necessidade de StudySession no roadmap | product decision |
 
 ## Critério para apagar o arquivo histórico
 
