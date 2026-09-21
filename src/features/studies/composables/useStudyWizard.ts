@@ -54,7 +54,7 @@ export function useStudyWizard() {
         frequency: draft.frequency.trim(),
         notes: draft.notes.trim() || undefined,
       },
-      status: 'ACTIVE',
+      status: 'CREATED',
     }
   }
 

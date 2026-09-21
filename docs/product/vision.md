@@ -46,9 +46,10 @@ Study
 
 ### Status do Study
 
-`ACTIVE` | `PAUSED` | `COMPLETED` | `ARCHIVED`
+`CREATED` | `STARTED` | `PAUSED` | `COMPLETED` | `ARCHIVED`
 
-Status do Study ≠ status de Task ≠ execução de sessão.
+- `CREATED`: cadastrado, ainda não iniciado.
+- `STARTED`: em andamento (conta no limite `maxActiveStudies`).
 
 ### Criação e edição
 
@@ -68,7 +69,7 @@ Recursos simples **dentro** do Study no MVP (não domínios autônomos). Podem s
 ## Planos (direção)
 
 - `FREE` / `PREMIUM`
-- Free (exemplos): máx. 3 Studies ACTIVE; máx. 10 criações/mês
+- Free (exemplos): máx. 3 Studies STARTED; máx. 10 criações/mês
 - Limite mensal = criações no período (não devolvidas ao arquivar/excluir)
 - Detalhe de entitlements: ADR-0004
 

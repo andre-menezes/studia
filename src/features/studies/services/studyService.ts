@@ -1,5 +1,5 @@
 import { http } from '@/shared/http'
-import type { CreateStudyInput, Study } from '../domain/study'
+import type { CreateStudyInput, Study, UpdateStudyInput } from '../domain/study'
 
 export const studyService = {
   list() {
@@ -10,5 +10,8 @@ export const studyService = {
   },
   getById(studyId: string) {
     return http<Study>(`/studies/${studyId}`)
+  },
+  update(studyId: string, body: UpdateStudyInput) {
+    return http<Study>(`/studies/${studyId}`, { method: 'PATCH', body })
   },
 }

@@ -21,23 +21,41 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <footer class="flex justify-end gap-3 border-t border-border px-6 py-4">
+  <footer
+    class="flex flex-wrap items-center justify-between gap-3 px-6 pt-2 pb-7 sm:px-8 sm:pb-8"
+  >
     <AppButton
       v-if="isFirst"
       variant="outlined"
       color="muted"
+      size="lg"
+      prepend-icon="close"
       @click="emit('cancel')"
     >
       {{ cancelLabel }}
     </AppButton>
-    <AppButton v-else variant="outlined" color="muted" @click="emit('back')">
+    <AppButton
+      v-else
+      variant="outlined"
+      color="muted"
+      size="lg"
+      prepend-icon="arrow_back"
+      @click="emit('back')"
+    >
       {{ backLabel }}
     </AppButton>
-    <AppButton v-if="!isLast" @click="emit('next')">
+    <AppButton
+      v-if="!isLast"
+      size="lg"
+      append-icon="arrow_forward"
+      @click="emit('next')"
+    >
       {{ continueLabel }}
     </AppButton>
     <AppButton
       v-else
+      size="lg"
+      prepend-icon="add"
       :loading="pending"
       :disabled="pending"
       @click="emit('submit')"

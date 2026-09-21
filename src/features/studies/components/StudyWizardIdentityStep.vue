@@ -15,14 +15,15 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <section class="flex flex-col gap-4">
-    <div>
-      <h2 class="text-base font-semibold text-foreground">{{ heading }}</h2>
-      <p class="text-sm text-muted">{{ hint }}</p>
+  <section class="flex flex-col gap-6">
+    <div class="space-y-1">
+      <h2 class="text-xl font-semibold text-foreground">{{ heading }}</h2>
+      <p class="text-base text-muted">{{ hint }}</p>
     </div>
     <AppTextField
       :model-value="title"
       required
+      prepend-icon="badge"
       :label="label"
       :placeholder="placeholder"
       @update:model-value="emit('update:title', $event)"

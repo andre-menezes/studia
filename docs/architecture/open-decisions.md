@@ -44,7 +44,6 @@ Ordenado pela sequência útil de documentação:
 | 4 | CI/CD + versionamento do app | guideline / ADR |
 | 5 | Modelo definitivo de Task / Note | FEATURE ou domain spec |
 | 6 | Necessidade de StudySession no roadmap | product decision |
-| 7 | Implementação FEATURE-0002 (+ PATCH OpenAPI/mock) | código em `feat/feature-0002-…` |
 
 ## Critério para apagar o arquivo histórico
 

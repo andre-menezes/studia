@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
-import { limits, useUsage } from "@/features/auth";
+import { limits, useAuthStore, useUsage } from "@/features/auth";
 import { ApiError } from "@/shared/http";
 import {
   AppAlert,
@@ -12,18 +12,18 @@ import {
 } from "@/shared/ui";
 import type { WizardStep } from "../composables/useStudyWizard";
 import { useStudyWizard } from "../composables/useStudyWizard";
-import type { Study } from "../domain/study";
 import { useStudyListStore } from "../stores/studyListStore";
+import StudiesAppBar from "../components/StudiesAppBar.vue";
 import StudyWizardActions from "../components/StudyWizardActions.vue";
 import StudyWizardConfirmStep from "../components/StudyWizardConfirmStep.vue";
 import StudyWizardIdentityStep from "../components/StudyWizardIdentityStep.vue";
 import StudyWizardObjectiveStep from "../components/StudyWizardObjectiveStep.vue";
 import StudyWizardRoutineStep from "../components/StudyWizardRoutineStep.vue";
-import StudyWizardSuccessPanel from "../components/StudyWizardSuccessPanel.vue";
 
 const { t } = useI18n();
 const router = useRouter();
 const studies = useStudyListStore();
+const auth = useAuthStore();
 const usage = useUsage();
 const {
   currentStep,
@@ -35,15 +35,14 @@ const {
   next,
   back,
   goToStep,
-  reset,
   toPayload,
   steps,
 } = useStudyWizard();
 
 const errorCode = ref<string | null>(null);
 const pending = ref(false);
-const created = ref<Study | null>(null);
 const cancelDialogOpen = ref(false);
+const loggingOut = ref(false);
 
 const fieldOwnerStep: Record<"title" | "objective" | "frequency", WizardStep> =
   {
@@ -99,25 +98,16 @@ async function submit() {
   errorCode.value = null;
   pending.value = true;
   try {
-    created.value = await studies.createStudy(toPayload());
+    const study = await studies.createStudy(toPayload());
+    await router.push({
+      name: "studies-home",
+      query: { created: study.id },
+    });
   } catch (err) {
     errorCode.value = err instanceof ApiError ? err.code : "INTERNAL_ERROR";
   } finally {
     pending.value = false;
   }
-}
-
-async function viewCreatedStudy() {
-  await router.push({
-    name: "studies-home",
-    query: created.value ? { created: created.value.id } : {},
-  });
-}
-
-function createAnother() {
-  created.value = null;
-  errorCode.value = null;
-  reset();
 }
 
 function hasDraftData() {
@@ -149,22 +139,53 @@ async function leaveWizard() {
 async function confirmDiscard() {
   await leaveWizard();
 }
+
+async function onLogout() {
+  if (loggingOut.value) return;
+  loggingOut.value = true;
+  try {
+    await auth.logout();
+    await router.push({ name: "login" });
+  } finally {
+    loggingOut.value = false;
+  }
+}
 </script>
 
 <template>
-  <main
-    class="flex min-h-screen items-center justify-center bg-background px-4 py-10"
-  >
+  <main class="relative min-h-screen bg-background">
     <div
-      class="w-full max-w-lg overflow-hidden rounded-[20px] border border-border bg-surface shadow-card"
+      class="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+      aria-hidden="true"
     >
-      <template v-if="!created">
-        <header class="flex flex-col gap-4 border-b border-border px-6 py-5">
+      <div
+        class="absolute -top-24 -right-16 size-72 rounded-full bg-accent/10 blur-3xl"
+      />
+      <div
+        class="absolute top-1/3 -left-20 size-64 rounded-full bg-secondary/10 blur-3xl"
+      />
+    </div>
+
+    <StudiesAppBar
+      :app-name="t('common.appName')"
+      :display-name="auth.user?.displayName ?? null"
+      :logout-label="loggingOut ? t('common.loading') : t('common.logout')"
+      :logging-out="loggingOut"
+      @logout="onLogout"
+    />
+
+    <div class="mx-auto max-w-3xl space-y-6 px-4 pt-6 pb-10 sm:px-6 sm:pt-8 sm:pb-12">
+      <div
+        class="rounded-[24px] bg-surface/90 shadow-card backdrop-blur-sm"
+      >
+        <header class="flex flex-col gap-6 px-6 pt-7 pb-2 sm:px-8 sm:pt-8">
           <div>
-            <h1 class="text-lg font-semibold text-foreground">
+            <h1
+              class="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
+            >
               {{ t("studies.wizard.title") }}
             </h1>
-            <p class="text-sm text-muted">
+            <p class="mt-1 text-base text-muted">
               {{
                 t("studies.wizard.step", {
                   step: stepIndex + 1,
@@ -182,58 +203,66 @@ async function confirmDiscard() {
           />
         </header>
 
-        <div class="px-6 py-6">
-          <StudyWizardIdentityStep
-            v-if="currentStep === 'identity'"
-            :title="draft.title"
-            :label="t('studies.wizard.fields.title')"
-            :heading="t('studies.wizard.prompts.identity.heading')"
-            :hint="t('studies.wizard.prompts.identity.hint')"
-            :placeholder="t('studies.wizard.prompts.identity.placeholder')"
-            @update:title="draft.title = $event"
-          />
-          <StudyWizardObjectiveStep
-            v-else-if="currentStep === 'objective'"
-            :objective="draft.objective"
-            :label="t('studies.wizard.fields.objective')"
-            :heading="t('studies.wizard.prompts.objective.heading')"
-            :hint="t('studies.wizard.prompts.objective.hint')"
-            :placeholder="t('studies.wizard.prompts.objective.placeholder')"
-            @update:objective="draft.objective = $event"
-          />
-          <StudyWizardRoutineStep
-            v-else-if="currentStep === 'routine'"
-            :frequency="draft.frequency"
-            :notes="draft.notes"
-            :frequency-label="t('studies.wizard.fields.frequency')"
-            :notes-label="t('studies.wizard.fields.notes')"
-            :heading="t('studies.wizard.prompts.routine.heading')"
-            :hint="t('studies.wizard.prompts.routine.hint')"
-            :frequency-placeholder="
-              t('studies.wizard.prompts.routine.frequencyPlaceholder')
-            "
-            :notes-placeholder="
-              t('studies.wizard.prompts.routine.notesPlaceholder')
-            "
-            @update:frequency="draft.frequency = $event"
-            @update:notes="draft.notes = $event"
-          />
-          <StudyWizardConfirmStep
-            v-else
-            :title="draft.title"
-            :objective="draft.objective"
-            :frequency="draft.frequency"
-            :notes="draft.notes"
-            :title-label="t('studies.wizard.fields.title')"
-            :objective-label="t('studies.wizard.fields.objective')"
-            :frequency-label="t('studies.wizard.fields.frequency')"
-            :edit-label="t('studies.wizard.edit')"
-            :heading="t('studies.wizard.prompts.confirm.heading')"
-            :usage-label="usageLabel"
-            @edit="editField"
-          />
+        <div class="min-h-[280px] px-6 py-6 sm:min-h-[320px] sm:px-8 sm:py-8">
+          <Transition name="wizard-step" mode="out-in">
+            <StudyWizardIdentityStep
+              v-if="currentStep === 'identity'"
+              :key="'identity'"
+              :title="draft.title"
+              :label="t('studies.wizard.fields.title')"
+              :heading="t('studies.wizard.prompts.identity.heading')"
+              :hint="t('studies.wizard.prompts.identity.hint')"
+              :placeholder="t('studies.wizard.prompts.identity.placeholder')"
+              @update:title="draft.title = $event"
+            />
+            <StudyWizardObjectiveStep
+              v-else-if="currentStep === 'objective'"
+              :key="'objective'"
+              :objective="draft.objective"
+              :label="t('studies.wizard.fields.objective')"
+              :heading="t('studies.wizard.prompts.objective.heading')"
+              :hint="t('studies.wizard.prompts.objective.hint')"
+              :placeholder="
+                t('studies.wizard.prompts.objective.placeholder')
+              "
+              @update:objective="draft.objective = $event"
+            />
+            <StudyWizardRoutineStep
+              v-else-if="currentStep === 'routine'"
+              :key="'routine'"
+              :frequency="draft.frequency"
+              :notes="draft.notes"
+              :frequency-label="t('studies.wizard.fields.frequency')"
+              :notes-label="t('studies.wizard.fields.notes')"
+              :heading="t('studies.wizard.prompts.routine.heading')"
+              :hint="t('studies.wizard.prompts.routine.hint')"
+              :frequency-placeholder="
+                t('studies.wizard.prompts.routine.frequencyPlaceholder')
+              "
+              :notes-placeholder="
+                t('studies.wizard.prompts.routine.notesPlaceholder')
+              "
+              @update:frequency="draft.frequency = $event"
+              @update:notes="draft.notes = $event"
+            />
+            <StudyWizardConfirmStep
+              v-else
+              :key="'confirm'"
+              :title="draft.title"
+              :objective="draft.objective"
+              :frequency="draft.frequency"
+              :notes="draft.notes"
+              :title-label="t('studies.wizard.fields.title')"
+              :objective-label="t('studies.wizard.fields.objective')"
+              :frequency-label="t('studies.wizard.fields.frequency')"
+              :edit-label="t('studies.wizard.edit')"
+              :heading="t('studies.wizard.prompts.confirm.heading')"
+              :usage-label="usageLabel"
+              @edit="editField"
+            />
+          </Transition>
 
-          <AppAlert v-if="errorMessage" class="mt-4" tone="error">
+          <AppAlert v-if="errorMessage" class="mt-6" type="error">
             {{ errorMessage }}
           </AppAlert>
         </div>
@@ -252,19 +281,7 @@ async function confirmDiscard() {
           @next="next()"
           @submit="submit"
         />
-      </template>
-
-      <StudyWizardSuccessPanel
-        v-else
-        :success-title="t('studies.wizard.success.title')"
-        :success-subtitle="
-          t('studies.wizard.success.subtitle', { title: created.title })
-        "
-        :view-label="t('studies.wizard.success.view')"
-        :create-another-label="t('studies.wizard.success.createAnother')"
-        @view="viewCreatedStudy"
-        @create-another="createAnother"
-      />
+      </div>
     </div>
 
     <AppConfirmDialog
@@ -274,6 +291,8 @@ async function confirmDiscard() {
       :confirm-label="t('studies.wizard.cancelConfirmDiscard')"
       :cancel-label="t('studies.wizard.cancelConfirmKeep')"
       confirm-color="error"
+      confirm-icon="delete"
+      cancel-icon="edit"
       @confirm="confirmDiscard"
       @cancel="keepEditing"
     />

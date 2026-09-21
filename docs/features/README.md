@@ -35,4 +35,4 @@ Referências (ADRs / guidelines)
 | Doc | Título | Status |
 |---|---|---|
 | [FEATURE-0001](./FEATURE-0001-study-creation-wizard.md) | Study creation wizard | Ready |
-| [FEATURE-0002](./FEATURE-0002-study-home-detail-edit.md) | Study home, detalhe e edição localizada | Proposed |
+| [FEATURE-0002](./FEATURE-0002-study-home-detail-edit.md) | Study home, detalhe e edição localizada | Accepted |

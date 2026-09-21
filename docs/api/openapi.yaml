@@ -154,6 +154,35 @@ paths:
           $ref: '#/components/responses/Problem'
         '404':
           $ref: '#/components/responses/Problem'
+    patch:
+      tags: [studies]
+      summary: Update study fields (localized edit)
+      operationId: updateStudy
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/studyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStudyRequest'
+      responses:
+        '200':
+          description: Study updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Study'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
 components:
   securitySchemes:
     bearerAuth:
@@ -256,7 +285,10 @@ components:
               minimum: 0
     StudyStatus:
       type: string
-      enum: [ACTIVE, PAUSED, COMPLETED, ARCHIVED]
+      enum: [CREATED, STARTED, PAUSED, COMPLETED, ARCHIVED]
+      description: >
+        CREATED = cadastrado ainda não iniciado; STARTED = em andamento.
+        Limite maxActiveStudies aplica-se a Studies STARTED.
     StudyRoutine:
       type: object
       required: [frequency]
@@ -298,7 +330,22 @@ components:
           $ref: '#/components/schemas/StudyRoutine'
         status:
           $ref: '#/components/schemas/StudyStatus'
-          default: ACTIVE
+          default: CREATED
+    UpdateStudyRequest:
+      type: object
+      description: Partial update — send only fields being edited
+      minProperties: 1
+      properties:
+        title:
+          type: string
+          minLength: 1
+        objective:
+          type: string
+          minLength: 1
+        routine:
+          $ref: '#/components/schemas/StudyRoutine'
+        status:
+          $ref: '#/components/schemas/StudyStatus'
     Problem:
       type: object
       required: [type, title, status, code]

@@ -20,45 +20,51 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <section class="flex flex-col gap-4">
-    <h2 class="text-base font-semibold text-foreground">{{ heading }}</h2>
+  <section class="flex flex-col gap-6">
+    <div class="space-y-1">
+      <h2 class="text-xl font-semibold text-foreground">{{ heading }}</h2>
+    </div>
     <dl class="flex flex-col gap-3">
       <div
-        class="flex items-start justify-between gap-3 border-b border-border/60 pb-3"
+        class="flex items-start justify-between gap-4 rounded-2xl bg-surface-variant/60 px-4 py-4"
       >
-        <div>
-          <dt class="text-xs text-muted">{{ titleLabel }}</dt>
-          <dd class="text-sm text-foreground">{{ title }}</dd>
+        <div class="min-w-0">
+          <dt class="text-sm text-muted">{{ titleLabel }}</dt>
+          <dd class="mt-0.5 text-base text-foreground">{{ title }}</dd>
         </div>
         <AppButton
           variant="text"
           color="accent"
           size="sm"
+          prepend-icon="edit"
           @click="emit('edit', 'title')"
         >
           {{ editLabel }}
         </AppButton>
       </div>
       <div
-        class="flex items-start justify-between gap-3 border-b border-border/60 pb-3"
+        class="flex items-start justify-between gap-4 rounded-2xl bg-surface-variant/60 px-4 py-4"
       >
-        <div>
-          <dt class="text-xs text-muted">{{ objectiveLabel }}</dt>
-          <dd class="text-sm text-foreground">{{ objective }}</dd>
+        <div class="min-w-0">
+          <dt class="text-sm text-muted">{{ objectiveLabel }}</dt>
+          <dd class="mt-0.5 text-base text-foreground">{{ objective }}</dd>
         </div>
         <AppButton
           variant="text"
           color="accent"
           size="sm"
+          prepend-icon="edit"
           @click="emit('edit', 'objective')"
         >
           {{ editLabel }}
         </AppButton>
       </div>
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <dt class="text-xs text-muted">{{ frequencyLabel }}</dt>
-          <dd class="text-sm text-foreground">
+      <div
+        class="flex items-start justify-between gap-4 rounded-2xl bg-surface-variant/60 px-4 py-4"
+      >
+        <div class="min-w-0">
+          <dt class="text-sm text-muted">{{ frequencyLabel }}</dt>
+          <dd class="mt-0.5 text-base text-foreground">
             {{ frequency }}<span v-if="notes"> · {{ notes }}</span>
           </dd>
         </div>
@@ -66,6 +72,7 @@ const emit = defineEmits<{
           variant="text"
           color="accent"
           size="sm"
+          prepend-icon="edit"
           @click="emit('edit', 'frequency')"
         >
           {{ editLabel }}
@@ -74,7 +81,7 @@ const emit = defineEmits<{
     </dl>
     <p
       v-if="usageLabel"
-      class="rounded-lg bg-surface-variant px-3 py-2 text-xs text-muted"
+      class="rounded-2xl bg-accent-variant px-4 py-3 text-sm text-foreground"
     >
       {{ usageLabel }}
     </p>

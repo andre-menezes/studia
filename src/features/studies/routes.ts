@@ -11,4 +11,10 @@ export const studiesRoutes: RouteRecordRaw[] = [
     name: 'studies-create',
     component: () => import('./views/StudyCreateWizardView.vue'),
   },
+  {
+    path: '/studies/:studyId',
+    name: 'studies-detail',
+    component: () => import('./views/StudyDetailView.vue'),
+    props: true,
+  },
 ]
