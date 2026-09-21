@@ -11,7 +11,7 @@ Aplicar a ADR-0005 no dia a dia: onde vive o cliente, como services o usam e o q
 ## Fora do escopo
 
 - Política de expiração/rotação de tokens (ADR-0006).
-- Catálogo completo de error codes (`docs/api/error-codes.md`).
+- Redação das mensagens i18n (ver `docs/architecture/i18n.md` e `docs/api/error-codes.md`).
 - Implementação do stub DX (`tools/mock-server/`, ADR-0008) ou do Mock Server oficial (repositório externo).
 
 ## Onde colocar
@@ -73,7 +73,7 @@ O cliente deve lançar/retornar erro com:
 - `code` (string estável, quando o body trouxer)
 - payload opcional para debug (não exibir ao usuário)
 
-Mapeamento i18n fica nas features / `shared/i18n` (ex.: `errors.<code>`). Detalhe do catálogo: futuro `docs/api/error-codes.md`.
+Mapeamento i18n fica nas features / `shared/i18n` (ex.: `errors.<CODE>`). Catálogo canônico: `docs/api/error-codes.md` (ADR-0007).
 
 ## Exemplos
 
@@ -81,7 +81,7 @@ Mapeamento i18n fica nas features / `shared/i18n` (ex.: `errors.<code>`). Detalh
 
 - `studyService.list()` → `http('/studies')`
 - Bootstrap chama refresh uma vez na subida do app
-- Feature mostra `$t('errors.STUDY_LIMIT_REACHED')` a partir de `error.code`
+- Feature mostra `$t('errors.STUDY_CREATE_LIMIT_REACHED')` a partir de `error.code`
 
 ### Incorreto
 
@@ -89,6 +89,7 @@ Mapeamento i18n fica nas features / `shared/i18n` (ex.: `errors.<code>`). Detalh
 - Segundo `POST /auth/refresh` enquanto o primeiro ainda está pendente
 - `localStorage.setItem('accessToken', ...)`
 - `toast(error.message)` com texto do servidor
+- Usar código inventado (`STUDY_LIMIT_REACHED`) em vez do catálogo (`STUDY_CREATE_LIMIT_REACHED` / `STUDY_ACTIVE_LIMIT_REACHED`)
 
 ## Resultado esperado
 
@@ -96,6 +97,8 @@ Qualquer feature nova consome a API só via service + `shared/http`, com auth e 
 
 ## Referências
 
-- ADR-0005
+- ADR-0005, ADR-0007
+- `docs/api/error-codes.md`, `docs/api/openapi.yaml`
 - ADR-0003, `docs/architecture/state-management.md`
 - ADR-0001, ADR-0008 (`tools/mock-server/` — stub DX; mock oficial externo)
+- `docs/architecture/i18n.md`

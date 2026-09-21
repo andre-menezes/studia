@@ -16,7 +16,7 @@ Permitir que o usuário autenticado crie um **Study** por um fluxo guiado em eta
 
 ## Fora do escopo
 
-- Edição de Study (rápida/localizada — FEATURE futura).
+- Edição de Study (rápida/localizada — FEATURE-0002).
 - Tasks e Notes além do necessário para criar Study “vazio” delas no MVP.
 - Timer, StudySession, estatísticas.
 - Definição visual final (design tokens, marketing) — apenas comportamento e regras.

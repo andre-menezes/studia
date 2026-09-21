@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { AppButton } from "@/shared/ui";
+
 defineProps<{
   title: string;
   objective: string;
@@ -28,13 +30,14 @@ const emit = defineEmits<{
           <dt class="text-xs text-muted">{{ titleLabel }}</dt>
           <dd class="text-sm text-foreground">{{ title }}</dd>
         </div>
-        <button
-          type="button"
-          class="text-sm font-medium text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        <AppButton
+          variant="text"
+          color="accent"
+          size="sm"
           @click="emit('edit', 'title')"
         >
           {{ editLabel }}
-        </button>
+        </AppButton>
       </div>
       <div
         class="flex items-start justify-between gap-3 border-b border-border/60 pb-3"
@@ -43,13 +46,14 @@ const emit = defineEmits<{
           <dt class="text-xs text-muted">{{ objectiveLabel }}</dt>
           <dd class="text-sm text-foreground">{{ objective }}</dd>
         </div>
-        <button
-          type="button"
-          class="text-sm font-medium text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        <AppButton
+          variant="text"
+          color="accent"
+          size="sm"
           @click="emit('edit', 'objective')"
         >
           {{ editLabel }}
-        </button>
+        </AppButton>
       </div>
       <div class="flex items-start justify-between gap-3">
         <div>
@@ -58,13 +62,14 @@ const emit = defineEmits<{
             {{ frequency }}<span v-if="notes"> · {{ notes }}</span>
           </dd>
         </div>
-        <button
-          type="button"
-          class="text-sm font-medium text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        <AppButton
+          variant="text"
+          color="accent"
+          size="sm"
           @click="emit('edit', 'frequency')"
         >
           {{ editLabel }}
-        </button>
+        </AppButton>
       </div>
     </dl>
     <p

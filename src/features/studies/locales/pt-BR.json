@@ -6,6 +6,12 @@
       "create": "Criar Estudo",
       "empty": "Você ainda não criou nenhum Estudo. Comece organizando o primeiro."
     },
+    "status": {
+      "ACTIVE": "Ativo",
+      "PAUSED": "Pausado",
+      "COMPLETED": "Concluído",
+      "ARCHIVED": "Arquivado"
+    },
     "wizard": {
       "title": "Novo Estudo",
       "step": "Etapa {step} de {total}",
