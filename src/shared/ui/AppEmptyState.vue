@@ -17,18 +17,18 @@ withDefaults(
 
 <template>
   <div
-    class="flex flex-col items-center gap-3 px-6 py-12 text-center"
+    class="flex flex-col items-center gap-4 px-6 py-16 text-center sm:py-20"
     :class="
       bordered
-        ? 'rounded-[20px] border border-dashed border-border bg-surface shadow-card'
+        ? 'rounded-[24px] bg-surface/90 shadow-card backdrop-blur-sm'
         : ''
     "
   >
     <div
-      class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-variant text-accent"
+      class="flex size-14 items-center justify-center rounded-2xl bg-accent-variant text-accent"
       aria-hidden="true"
     >
-      <span class="material-symbols-outlined text-[28px] leading-none">
+      <span class="material-symbols-outlined text-[32px] leading-none">
         {{ icon }}
       </span>
     </div>
@@ -36,18 +36,21 @@ withDefaults(
     <component
       :is="headingLevel"
       v-if="title"
-      class="text-base font-semibold text-foreground"
+      class="text-lg font-semibold text-foreground"
     >
       {{ title }}
     </component>
 
-    <div v-if="$slots.default || description" class="max-w-xs text-sm text-muted">
+    <div
+      v-if="$slots.default || description"
+      class="max-w-md text-base text-muted"
+    >
       <slot>
         <p>{{ description }}</p>
       </slot>
     </div>
 
-    <div v-if="$slots.actions" class="mt-1 flex flex-wrap justify-center gap-2">
+    <div v-if="$slots.actions" class="mt-2 flex flex-wrap justify-center gap-2">
       <slot name="actions" />
     </div>
   </div>

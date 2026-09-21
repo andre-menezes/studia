@@ -64,12 +64,12 @@ function onModalClose() {
     @close="onModalClose"
   >
     <div
-      class="overflow-hidden rounded-[20px] border border-border bg-surface p-6 shadow-card"
+      class="overflow-hidden rounded-[20px] border border-border bg-surface p-6 shadow-card sm:p-8"
     >
-      <h2 class="text-lg font-semibold tracking-tight text-foreground">
+      <h2 class="text-xl font-semibold tracking-tight text-foreground">
         {{ title }}
       </h2>
-      <div class="mt-2 text-sm leading-relaxed text-muted">
+      <div class="mt-2 text-base leading-relaxed text-muted">
         <slot>
           <p v-if="description">{{ description }}</p>
         </slot>

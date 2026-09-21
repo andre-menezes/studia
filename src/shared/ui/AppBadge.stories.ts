@@ -32,6 +32,21 @@ export const AllTones: Story = {
   }),
 };
 
+export const Outlined: Story = {
+  render: () => ({
+    components: { AppBadge },
+    template: `
+      <div class="flex flex-wrap gap-2">
+        <AppBadge variant="outlined" tone="primary">Active</AppBadge>
+        <AppBadge variant="outlined" tone="secondary">Paused</AppBadge>
+        <AppBadge variant="outlined" tone="accent">Done</AppBadge>
+        <AppBadge variant="outlined" tone="error">Archived</AppBadge>
+        <AppBadge variant="outlined" tone="muted">Muted</AppBadge>
+      </div>
+    `,
+  }),
+};
+
 export const WithIcon: Story = {
   args: { tone: "success", icon: "check_circle" },
   render: (args) => ({
@@ -48,6 +63,7 @@ export const Sizes: Story = {
       <div class="flex items-center gap-2">
         <AppBadge size="sm" tone="primary">SM</AppBadge>
         <AppBadge size="md" tone="primary">MD</AppBadge>
+        <AppBadge size="sm" variant="outlined" tone="primary">SM outlined</AppBadge>
       </div>
     `,
   }),

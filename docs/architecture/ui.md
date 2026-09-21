@@ -34,16 +34,19 @@ src/features/*/components/  # UI com copy/estrutura da feature
 ## Regras
 
 1. **Interação padrão** usa `AppButton`, `AppTextField`, `AppTextarea`, `AppAlert`, `AppBadge`, `AppEmptyState`, `AppTopBar`, `AppModal` / `AppConfirmDialog`, `AppSpinner`, `AppCard`, `AppStepper` quando couber.
-2. **Não** criar `<button>` / `<input>` estilizados ad hoc em features se já existir equivalente em `shared/ui`.
-3. Exceção: controles com chrome **custom** (ex.: círculo do `AppStepper`) podem usar `<button>` nativo **dentro** do componente shared — não recriar esse padrão nas features.
-4. Novo `App*` só quando houver **≥2** consumidores reais **ou** for peça base do design system documentada no Storybook (bootstrap do DS).
-5. Componentes `App*` são **i18n-agnósticos**: strings via props/slots; call site usa `t(...)`.
-6. Ícones: apenas **Material Symbols Outlined** (ligature), nunca MDI.
-7. Tokens: cores/semântica via classes Tailwind mapeadas aos CSS vars (`accent`, `primary`, `error`, `muted`, `border`, `surface`, …). Não inventar roxo/glow “AI default”.
-8. Cursor: botões usam `pointer`; desabilitados `not-allowed` (ver `main.css` + `AppButton`).
-9. A11y mínima: `type` correto, foco visível (`focus-visible`), `aria-label` em icon-only, `role="dialog"` / `aria-modal` em modais, erros de campo com `aria-invalid` + `aria-describedby`.
-10. Tom de produto: assistir/organizar estudos — copy encorajadora no call site; shared não embute mensagens punitivas.
-11. Storybook: todo `App*` novo deve ter `*.stories.ts` ao lado do componente.
+2. **Priorizar ícones** em `AppButton` (`prependIcon` / `appendIcon` / `icon`) com Material Symbols — exceto quando o ícone for decorativo demais ou conflitar com `loading`.
+3. **Não** criar `<button>` / `<input>` estilizados ad hoc em features se já existir equivalente em `shared/ui`.
+4. Exceção: controles com chrome **custom** (ex.: círculo do `AppStepper`) podem usar `<button>` nativo **dentro** do componente shared — não recriar esse padrão nas features.
+5. Novo `App*` só quando houver **≥2** consumidores reais **ou** for peça base do design system documentada no Storybook (bootstrap do DS).
+6. Componentes `App*` são **i18n-agnósticos**: strings via props/slots; call site usa `t(...)`.
+7. Ícones: apenas **Material Symbols Outlined** (ligature), nunca MDI.
+8. Tokens: cores/semântica via classes Tailwind mapeadas aos CSS vars (`accent`, `primary`, `error`, `muted`, `border`, `surface`, …). Não inventar roxo/glow “AI default”.
+9. Layout autenticado: **canvas** (`bg-background`) + superfícies flutuantes (`bg-surface/90` + `shadow-card`); `AppTopBar` default `floating` — ver `layouts.md`.
+10. Feedback efêmero: `AppAlert` com `type` (`success` | `warning` | `alert` | `error` | `info` | `accent`) — ícone/cor automáticos; preferir `type` a `tone`.
+11. Cursor: botões usam `pointer`; desabilitados `not-allowed` (ver `main.css` + `AppButton`).
+12. A11y mínima: `type` correto, foco visível (`focus-visible`), `aria-label` em icon-only, `role="dialog"` / `aria-modal` em modais, erros de campo com `aria-invalid` + `aria-describedby`.
+13. Tom de produto: assistir/organizar estudos — copy encorajadora no call site; shared não embute mensagens punitivas.
+14. Storybook: todo `App*` novo deve ter `*.stories.ts` ao lado do componente.
 
 ## Composable vs component (feature)
 
@@ -65,17 +68,19 @@ import { AppButton } from "@/shared/ui";
 </script>
 
 <template>
-  <AppButton variant="outlined" color="muted" @click="onCancel">
+  <AppButton variant="outlined" color="muted" prepend-icon="close" @click="onCancel">
     {{ t("common.cancel") }}
   </AppButton>
-  <AppButton :loading="pending" @click="onSubmit">
+  <AppButton append-icon="arrow_forward" :loading="pending" @click="onSubmit">
     {{ t("studies.wizard.submit") }}
   </AppButton>
 </template>
 ```
 
 ```vue
-<AppBadge :tone="statusTone">{{ t(`studies.status.${status}`) }}</AppBadge>
+<AppBadge :tone="statusTone" variant="outlined" size="sm">
+  {{ t(`studies.status.${status}`) }}
+</AppBadge>
 ```
 
 ### Incorreto
@@ -98,6 +103,6 @@ Features consomem `shared/ui` de forma consistente; o Storybook espelha o kit; n
 ## Referências
 
 - ADR-0001, ADR-0002, `project-structure.md`, `dependency-rules.md`
-- `docs/architecture/i18n.md`
+- `docs/architecture/i18n.md`, `docs/architecture/layouts.md`
 - `src/shared/ui/`, `.storybook/`
 - `docs/product/vision.md` (tom do produto)

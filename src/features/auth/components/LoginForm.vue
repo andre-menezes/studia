@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { AppAlert, AppButton, AppTextField } from "@/shared/ui";
+import logoDark from "@/shared/assets/brand/logo_studia_dark.svg";
+import logoLight from "@/shared/assets/brand/logo_studia_light.svg";
 
 defineProps<{
   appName: string;
@@ -27,18 +29,17 @@ const emit = defineEmits<{
     class="w-full max-w-sm overflow-hidden rounded-[20px] border border-border bg-surface shadow-card"
   >
     <div class="flex flex-col items-center gap-3 px-6 pt-8 text-center">
-      <div
-        class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-lg font-bold text-white"
-        aria-hidden="true"
-      >
-        S
-      </div>
-      <div class="flex flex-col gap-1">
-        <h1 class="text-2xl font-semibold tracking-tight text-primary">
-          {{ appName }}
-        </h1>
-        <p class="text-sm text-muted">{{ subtitle }}</p>
-      </div>
+      <picture>
+        <source media="(prefers-color-scheme: dark)" :srcset="logoDark" />
+        <img
+          :src="logoLight"
+          :alt="appName"
+          class="h-10 w-auto max-w-[12rem] object-contain"
+          width="200"
+          height="48"
+        />
+      </picture>
+      <p class="text-sm text-muted">{{ subtitle }}</p>
     </div>
 
     <form
@@ -64,11 +65,17 @@ const emit = defineEmits<{
         @update:model-value="emit('update:password', $event)"
       />
 
-      <AppAlert v-if="errorMessage" tone="error">
+      <AppAlert v-if="errorMessage" type="error">
         {{ errorMessage }}
       </AppAlert>
 
-      <AppButton type="submit" block :loading="pending" class="mt-1">
+      <AppButton
+        type="submit"
+        block
+        prepend-icon="login"
+        :loading="pending"
+        class="mt-1"
+      >
         {{ pending ? loadingLabel : submitLabel }}
       </AppButton>
     </form>

@@ -26,32 +26,39 @@ Definir o shell de layout do MVP: top bar, conteúdo, breakpoints e navegação 
 ## Estrutura canônica
 
 ```text
-┌─────────────────────────────────────┐
-│ AppTopBar (brand + meta + actions)  │  sticky, border-b, surface/blur
-├─────────────────────────────────────┤
-│                                     │
-│   main (max-width, padding)         │  conteúdo da rota
-│                                     │
-└─────────────────────────────────────┘
+┌──────────────────────────────────────────┐
+│  canvas (bg-background + atmosfera)      │
+│                                          │
+│   ┌────────────────────────────┐         │
+│   │ AppTopBar floating         │  sticky │
+│   └────────────────────────────┘         │
+│                                          │
+│   ┌────────────────────────────┐         │
+│   │ painéis de conteúdo        │  gap    │
+│   │ (surface + shadow, sem     │         │
+│   │  divisórias internas)      │         │
+│   └────────────────────────────┘         │
+└──────────────────────────────────────────┘
 ```
 
 - **Público (login):** card centralizado, sem TopBar autenticada.
-- **Autenticado:** `AppTopBar` + `main` com `max-w-2xl` (home/lista) ou `max-w-lg` (wizard) conforme a view.
-- Wizard pode omitir ações extras na TopBar; logout permanece acessível na home.
+- **Autenticado:** canvas contínuo; `AppTopBar` **flutuante** (`floating`, sem `border-b` full-bleed) + blocos de conteúdo com `shadow-card` e espaços (`gap`), sem linhas de seção.
+- Wizard: TopBar flutuante + um painel único (sem `border-t`/`border-b` entre header/body/footer).
 
 ## Regras
 
 1. Usar `AppTopBar` para chrome autenticado — não recriar header ad hoc (`docs/architecture/ui.md`).
 2. **Não** introduzir sidebar global no MVP sem FEATURE/ADR.
 3. Larguras:
-   - Home / lista: `max-w-2xl`
-   - Wizard / formulários focados: `max-w-lg` (ou equivalente já usado)
-   - Detalhe Study: preferir `max-w-2xl` alinhado à home
-4. Espaçamento vertical de página: `py-8` / `py-10` com `px-4` — manter ritmo consistente.
-5. Fundo: `bg-background`; superfícies elevadas: `bg-surface` + `border-border` + `shadow-card` / `rounded-[20px]` quando for painel/card de interação.
-6. Breakpoints: mobile-first; TopBar e CTAs devem empilhar sem overflow horizontal; preferir `flex-col` → `sm:flex-row` onde já houver padrão (home).
-7. Uma **composição** clara por viewport inicial da rota (não “dashboard de widgets” no hero da home).
-8. Rotas: composição em `app/router`; features exportam `routes.ts` (ADR-0002).
+   - Home (board FEATURE-0002): até `max-w-[90rem]`; colunas por status com scroll interno (`h-dvh`, sem scroll da página); mobile com scroll horizontal entre colunas
+   - Wizard / formulários focados: `max-w-3xl` (painel full-bleed com padding generoso)
+   - Detalhe Study: `max-w-3xl`
+4. Espaçamento: home autenticada usa `h-dvh` + padding curto; wizard/detalhe mantêm `py-10` / `sm:py-12` com `px-4` / `sm:px-6`.
+5. Fundo: `bg-background` como **quadro/canvas**; superfícies elevadas: `bg-surface/90` + `shadow-card` + `rounded-[20px|24px]` — **evitar** `border-b`/`border-t` como divisória de layout (preferir gap).
+6. `AppTopBar` default: `floating` (inset + radius + sombra, sem `border`). Só usar barra full-bleed (`floating=false`) se uma FEATURE exigir.
+7. Breakpoints: mobile-first; board: colunas fixas + `overflow-x-auto`; filtros empilham em coluna no mobile.
+8. Uma **composição** clara por viewport inicial da rota (não “dashboard de widgets” no hero da home).
+9. Rotas: composição em `app/router`; features exportam `routes.ts` (ADR-0002).
 
 ## Navegação
 
@@ -60,7 +67,7 @@ Definir o shell de layout do MVP: top bar, conteúdo, breakpoints e navegação 
 | Login | Home | pós-auth |
 | Home | Wizard criar | CTA `canCreateStudy` |
 | Home | Detalhe | clique no item da lista |
-| Wizard sucesso | Detalhe / Home | CTAs FEATURE-0001 |
+| Wizard sucesso | Home | redirect + `AppAlert` (`?created=`) |
 | Detalhe | Home | voltar / brand |
 | Qualquer autenticado | Login | logout |
 
@@ -69,13 +76,12 @@ Definir o shell de layout do MVP: top bar, conteúdo, breakpoints e navegação 
 ### Correto
 
 ```vue
-<AppTopBar>
-  <template #brand>…</template>
-  <template #actions>
-    <AppButton variant="text" color="muted" @click="logout">…</AppButton>
-  </template>
-</AppTopBar>
-<main class="mx-auto max-w-2xl px-4 py-8">…</main>
+<main class="relative flex h-dvh flex-col overflow-hidden bg-background">
+  <AppTopBar max-width-class="max-w-[90rem]">…</AppTopBar>
+  <div class="mx-auto flex min-h-0 w-full max-w-[90rem] flex-1 flex-col gap-4 px-4">
+    <!-- filtros + board de colunas com studia-scrollbar -->
+  </div>
+</main>
 ```
 
 ### Incorreto
