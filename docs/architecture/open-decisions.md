@@ -28,6 +28,9 @@ Substituir a lista §56–57 da discussão inicial por um backlog vivo de decis�
 | i18n (organização e erros → chaves) | `docs/architecture/i18n.md` |
 | Stub HTTP local de DX (`tools/mock-server`) | ADR-0008 |
 | UI / componentes shared (`App*`, Storybook) | `docs/architecture/ui.md` |
+| Layouts e navegação (MVP) | `docs/architecture/layouts.md` |
+| Estratégia de testes (mínimo MVP) | `docs/architecture/testing.md` |
+| FEATURE Study home / detalhe / edição | FEATURE-0002 |
 
 ## Abertas (próximos passos sugeridos)
 
@@ -37,12 +40,11 @@ Ordenado pela sequência útil de documentação:
 |---|---|---|
 | 1 | Sessões multi-dispositivo / revogação (UI) | ADR (pode adiar pós-MVP) |
 | 2 | Período exato da cota mensal de criações | ADR de billing/usage |
-| 3 | Layouts, navegação, design tokens, breakpoints | guideline + FEATURE dashboard |
-| 4 | a11y aprofundada / SEO | guidelines |
-| 5 | Estratégia de testes + coverage mínimo | guideline `testing.md` |
-| 6 | CI/CD + versionamento do app | guideline / ADR |
-| 7 | Modelo definitivo de Task / Note | FEATURE ou domain spec |
-| 8 | Necessidade de StudySession no roadmap | product decision |
+| 3 | a11y aprofundada / SEO | guidelines |
+| 4 | CI/CD + versionamento do app | guideline / ADR |
+| 5 | Modelo definitivo de Task / Note | FEATURE ou domain spec |
+| 6 | Necessidade de StudySession no roadmap | product decision |
+| 7 | Implementação FEATURE-0002 (+ PATCH OpenAPI/mock) | código em `feat/feature-0002-…` |
 
 ## Critério para apagar o arquivo histórico
 

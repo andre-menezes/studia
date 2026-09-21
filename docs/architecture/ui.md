@@ -14,7 +14,7 @@ Definir onde vive a UI base, quando criar/usar componentes em `shared/ui`, e cri
 
 ## Fora do escopo
 
-- Guideline completa de layout/navegação/dashboard (FEATURE futura)
+- Guideline de layout/navegação/dashboard — ver `docs/architecture/layouts.md` e FEATURE-0002
 - SEO avançado / meta tags por rota
 - Design tokens em arquivo separado do CSS (pode evoluir depois)
 - Form resolver (VeeValidate/Zod wrappers)
