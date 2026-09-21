@@ -1,6 +1,6 @@
 # FEATURE-0002 — Study home, detalhe e edição localizada
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Data:** 2026-09-21
 
 ## Objetivo
@@ -9,11 +9,13 @@ Evoluir a home de Estudos para um **dashboard orientado à ação** (“o que es
 
 ## Escopo
 
-- Home autenticada (`studies-home`): lista, empty state, CTA criar, feedback de cota/limite (já parcial — consolidar).
+- Home autenticada (`studies-home`): board por status (colunas com scroll interno), empty state, CTA criar, filtro combo (status + busca por nome), feedback de cota/limite.
 - Rota de **detalhe** do Study (`GET /studies/{studyId}`).
-- **Edição localizada** de título, objetivo, rotina e status (PATCH/PUT alinhado a `docs/api/`).
-- Navegação a partir do sucesso do wizard (“Ver Estudo”) para o detalhe.
+- **Edição localizada** de título, objetivo, rotina e status (`PATCH /studies/{studyId}` alinhado a `docs/api/`).
+- Navegação a partir do sucesso do wizard (“Ver Estudo”) para o detalhe ou home com destaque.
 - UX e entitlements via `can` / `limits` (ADR-0004).
+- Status de domínio: `CREATED` (default ao cadastrar) | `STARTED` | `PAUSED` | `COMPLETED` | `ARCHIVED`.
+- Botão **Iniciar estudo** (`CREATED` → `STARTED`).
 
 ## Fora do escopo
 
@@ -31,8 +33,8 @@ Evoluir a home de Estudos para um **dashboard orientado à ação** (“o que es
 3. No detalhe: identidade, objetivo, rotina, status; ações primárias contextuais (editar campo, mudar status, voltar à home).
 4. **Editar** abre fluxo localizado (inline / dialog / painel) só para o campo ou grupo escolhido — **não** o wizard de 4 etapas.
 5. Ao salvar edição: um request de atualização; sucesso atualiza a UI; falha via `errors.<CODE>` (i18n).
-6. Mudança de status para `ACTIVE` respeita `limits.canActivateStudy` quando aplicável; falha `STUDY_ACTIVE_LIMIT_REACHED`.
-7. Deep-link: `?created={id}` (já usado no wizard) pode destacar ou abrir o Study recém-criado.
+6. Mudança de status para `STARTED` (iniciar) respeita `limits.canActivateStudy` quando aplicável; falha `STUDY_ACTIVE_LIMIT_REACHED`.
+7. Deep-link: `?created={id}` destaca o Study na home e exibe `AppAlert` de sucesso (dismissível).
 
 ```text
 Home (lista / empty)
@@ -53,16 +55,17 @@ Home (lista / empty)
 
 ## UX
 
-- Home prioriza ação: criar (se `canCreateStudy`) e abrir Study em andamento.
+- Home: board por status; criar; iniciar (`CREATED`); abrir Study; filtros status + nome.
+- Sem scroll na página: scroll só nas colunas (mobile: scroll horizontal entre colunas).
 - Detalhe: leitura clara; editar revelado no contexto (não esconder tudo atrás de um único “Editar tudo”).
 - Tom assistente (organizar/incentivar), não punitivo.
-- Layout: `docs/architecture/layouts.md` (AppTopBar + conteúdo central, sem sidebar obrigatória).
+- Layout: `docs/architecture/layouts.md` (AppTopBar + canvas, sem sidebar obrigatória).
 - Loading/empty/error com `AppSpinner` / `AppEmptyState` / `AppAlert`.
 
 ## Entitlements / limites
 
 - Criar: `limits.canCreateStudy(usage)` (home CTA + wizard).
-- Ativar: `limits.canActivateStudy(activeCount)` ao passar status para `ACTIVE`.
+- Ativar / iniciar: `limits.canActivateStudy(startedCount)` ao passar status para `STARTED`.
 - Mutações revalidadas no backend/mock.
 
 ## Exemplos

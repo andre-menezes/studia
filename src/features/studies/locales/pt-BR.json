@@ -4,10 +4,40 @@
       "title": "Seus Estudos",
       "subtitle": "O que você está estudando agora?",
       "create": "Criar Estudo",
-      "empty": "Você ainda não criou nenhum Estudo. Comece organizando o primeiro."
+      "emptyTitle": "Nenhum Estudo ainda",
+      "empty": "Você ainda não criou nenhum Estudo. Comece organizando o primeiro.",
+      "start": "Iniciar estudo",
+      "searchLabel": "Buscar",
+      "searchPlaceholder": "Nome do Estudo",
+      "statusFilterLabel": "Status",
+      "statusFilterAll": "Todos os status",
+      "clearFilters": "Limpar filtros",
+      "noFilterResults": "Nenhum Estudo corresponde aos filtros.",
+      "columnEmpty": "Nenhum Estudo neste status",
+      "createSuccessTitle": "Estudo criado.",
+      "createSuccessMessage": "{title} está pronto para começar.",
+      "createSuccessFallback": "Seu Estudo",
+      "dismissAlert": "Fechar"
+    },
+    "detail": {
+      "subtitle": "Revise e ajuste o que precisar — sem refazer o assistente.",
+      "back": "Voltar",
+      "edit": "Editar",
+      "save": "Salvar",
+      "changeStatus": "Alterar status",
+      "editSubtitle": "Atualize só este campo.",
+      "statusHint": "Escolha o status atual deste Estudo.",
+      "tasksComingSoon": "Tasks e notas deste Estudo chegam em breve.",
+      "editTitles": {
+        "title": "Editar nome",
+        "objective": "Editar objetivo",
+        "routine": "Editar rotina",
+        "status": "Alterar status"
+      }
     },
     "status": {
-      "ACTIVE": "Ativo",
+      "CREATED": "Criado",
+      "STARTED": "Iniciado",
       "PAUSED": "Pausado",
       "COMPLETED": "Concluído",
       "ARCHIVED": "Arquivado"

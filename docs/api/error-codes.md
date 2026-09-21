@@ -22,7 +22,7 @@ Mapear `code` estável da API (RFC 9457 + extensão) para chaves i18n no fronten
 | `VALIDATION_FAILED` | 422 | `errors.VALIDATION_FAILED` | Body inválido (genérico) |
 | `STUDY_NOT_FOUND` | 404 | `errors.STUDY_NOT_FOUND` | Study inexistente |
 | `STUDY_CREATE_LIMIT_REACHED` | 403 | `errors.STUDY_CREATE_LIMIT_REACHED` | Cota mensal de criações |
-| `STUDY_ACTIVE_LIMIT_REACHED` | 403 | `errors.STUDY_ACTIVE_LIMIT_REACHED` | Limite de Studies ACTIVE |
+| `STUDY_ACTIVE_LIMIT_REACHED` | 403 | `errors.STUDY_ACTIVE_LIMIT_REACHED` | Limite de Studies STARTED (em andamento) |
 | `INTERNAL_ERROR` | 500 | `errors.INTERNAL_ERROR` | Falha inesperada |
 
 ## Exemplos

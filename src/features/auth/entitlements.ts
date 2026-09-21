@@ -9,6 +9,9 @@ export const limits = {
   canCreateStudy() {
     return useAuthStore().canCreateStudy()
   },
+  canActivateStudy(activeCount: number) {
+    return useAuthStore().canActivateStudy(activeCount)
+  },
 }
 
 export function useUsage() {

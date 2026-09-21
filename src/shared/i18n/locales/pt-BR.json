@@ -16,6 +16,6 @@
     "VALIDATION_FAILED": "Verifique os dados informados.",
     "STUDY_NOT_FOUND": "Estudo não encontrado.",
     "STUDY_CREATE_LIMIT_REACHED": "Você atingiu o limite mensal de criação de Estudos.",
-    "STUDY_ACTIVE_LIMIT_REACHED": "Você atingiu o limite de Estudos ativos."
+    "STUDY_ACTIVE_LIMIT_REACHED": "Você atingiu o limite de Estudos iniciados."
   }
 }

@@ -1,4 +1,9 @@
-export type StudyStatus = 'ACTIVE' | 'PAUSED' | 'COMPLETED' | 'ARCHIVED'
+export type StudyStatus =
+  | 'CREATED'
+  | 'STARTED'
+  | 'PAUSED'
+  | 'COMPLETED'
+  | 'ARCHIVED'
 
 export type StudyRoutine = {
   frequency: string
@@ -20,3 +25,19 @@ export type CreateStudyInput = {
   routine: StudyRoutine
   status?: StudyStatus
 }
+
+export type UpdateStudyInput = {
+  title?: string
+  objective?: string
+  routine?: StudyRoutine
+  status?: StudyStatus
+}
+
+/** Board column order on the home screen. */
+export const STUDY_STATUS_ORDER: StudyStatus[] = [
+  'CREATED',
+  'STARTED',
+  'PAUSED',
+  'COMPLETED',
+  'ARCHIVED',
+]

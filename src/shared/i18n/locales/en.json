@@ -16,6 +16,6 @@
     "VALIDATION_FAILED": "Please check the submitted data.",
     "STUDY_NOT_FOUND": "Study not found.",
     "STUDY_CREATE_LIMIT_REACHED": "You reached the monthly study creation limit.",
-    "STUDY_ACTIVE_LIMIT_REACHED": "You reached the active studies limit."
+    "STUDY_ACTIVE_LIMIT_REACHED": "You reached the started studies limit."
   }
 }

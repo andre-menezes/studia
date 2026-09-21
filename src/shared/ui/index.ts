@@ -8,13 +8,17 @@ export type {
 } from "./AppButton.vue";
 
 export { default as AppBadge } from "./AppBadge.vue";
-export type { AppBadgeSize } from "./AppBadge.vue";
+export type { AppBadgeSize, AppBadgeVariant } from "./AppBadge.vue";
 
 export { default as AppSpinner } from "./AppSpinner.vue";
 export type { AppSpinnerSize, AppSpinnerTone } from "./AppSpinner.vue";
 
 export { default as AppAlert } from "./AppAlert.vue";
-export type { AppAlertTone, AppAlertVariant } from "./AppAlert.vue";
+export type {
+  AppAlertTone,
+  AppAlertType,
+  AppAlertVariant,
+} from "./AppAlert.vue";
 
 export { default as AppTextField } from "./AppTextField.vue";
 export { default as AppTextarea } from "./AppTextarea.vue";

@@ -79,13 +79,13 @@ function glyphFor(
         <div
           v-if="index < items.length - 1"
           aria-hidden="true"
-          class="pointer-events-none absolute top-4 left-1/2 z-0 h-0.5 w-full"
+          class="pointer-events-none absolute top-[1.125rem] left-1/2 z-0 h-0.5 w-full transition-colors duration-300"
           :class="connectorFilled(index) ? 'bg-accent' : 'bg-border'"
         />
 
         <button
           type="button"
-          class="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed"
+          class="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-medium transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed"
           :class="{
             'bg-accent text-on-accent': stateOf(index) === 'complete',
             'bg-accent text-on-accent ring-2 ring-accent/40 ring-offset-2 ring-offset-background':
@@ -113,7 +113,7 @@ function glyphFor(
         </button>
 
         <span
-          class="mt-2 max-w-full px-1 text-center text-xs leading-snug sm:text-sm"
+          class="mt-2 max-w-full px-1 text-center text-sm leading-snug"
           :class="
             stateOf(index) === 'current'
               ? 'font-medium text-foreground'

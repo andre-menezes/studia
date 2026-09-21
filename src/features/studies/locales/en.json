@@ -4,10 +4,40 @@
       "title": "Your Studies",
       "subtitle": "What are you studying now?",
       "create": "Create Study",
-      "empty": "You haven't created a Study yet. Start by organizing your first one."
+      "emptyTitle": "No Studies yet",
+      "empty": "You haven't created a Study yet. Start by organizing your first one.",
+      "start": "Start study",
+      "searchLabel": "Search",
+      "searchPlaceholder": "Study name",
+      "statusFilterLabel": "Status",
+      "statusFilterAll": "All statuses",
+      "clearFilters": "Clear filters",
+      "noFilterResults": "No Studies match your filters.",
+      "columnEmpty": "No Studies in this status",
+      "createSuccessTitle": "Study created.",
+      "createSuccessMessage": "{title} is ready to start.",
+      "createSuccessFallback": "Your Study",
+      "dismissAlert": "Dismiss"
+    },
+    "detail": {
+      "subtitle": "Review and adjust what you need — without redoing the wizard.",
+      "back": "Back",
+      "edit": "Edit",
+      "save": "Save",
+      "changeStatus": "Change status",
+      "editSubtitle": "Update only this field.",
+      "statusHint": "Choose the current status for this Study.",
+      "tasksComingSoon": "Tasks and notes for this Study are coming soon.",
+      "editTitles": {
+        "title": "Edit name",
+        "objective": "Edit objective",
+        "routine": "Edit routine",
+        "status": "Change status"
+      }
     },
     "status": {
-      "ACTIVE": "Active",
+      "CREATED": "Created",
+      "STARTED": "Started",
       "PAUSED": "Paused",
       "COMPLETED": "Completed",
       "ARCHIVED": "Archived"

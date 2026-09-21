@@ -189,9 +189,10 @@ const variantClasses = computed(() => {
 
 const rootClass = computed(() =>
   [
-    "inline-flex cursor-pointer items-center justify-center font-medium transition select-none",
+    "inline-flex cursor-pointer items-center justify-center font-medium transition duration-150 select-none active:scale-[0.98]",
     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-    "disabled:pointer-events-none disabled:opacity-50",
+    "disabled:pointer-events-none disabled:opacity-50 disabled:active:scale-100",
+    "motion-reduce:transition-none motion-reduce:active:scale-100",
     sizeClasses.value,
     roundedClass.value,
     variantClasses.value,

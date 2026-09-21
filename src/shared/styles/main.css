@@ -160,3 +160,84 @@ button[disabled],
     "opsz" 24;
   -webkit-font-smoothing: antialiased;
 }
+
+/* Wizard step transition */
+.wizard-step-enter-active {
+  transition:
+    opacity 200ms ease-out,
+    transform 200ms ease-out;
+}
+.wizard-step-leave-active {
+  transition:
+    opacity 150ms ease-in,
+    transform 150ms ease-in;
+}
+.wizard-step-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.wizard-step-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+@keyframes success-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.success-pop {
+  animation: success-pop 400ms ease-out both;
+}
+
+/* Studia custom scrollbars (board columns, overflow panels) */
+.studia-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--accent) 55%, transparent)
+    transparent;
+}
+
+.studia-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.studia-scrollbar::-webkit-scrollbar-track {
+  margin-block: 6px;
+  background: transparent;
+}
+
+.studia-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  background-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+.studia-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in srgb, var(--accent) 70%, var(--border));
+}
+
+.studia-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wizard-step-enter-active,
+  .wizard-step-leave-active {
+    transition: opacity 0.01ms linear;
+  }
+  .wizard-step-enter-from,
+  .wizard-step-leave-to {
+    transform: none;
+  }
+  .success-pop {
+    animation: none;
+  }
+}

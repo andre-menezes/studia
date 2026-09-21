@@ -82,6 +82,12 @@ export const useAuthStore = defineStore('auth', () => {
     return counter.remaining > 0
   }
 
+  function canActivateStudy(activeCount: number) {
+    const max = entitlements.value?.limits?.maxActiveStudies
+    if (max == null) return false
+    return activeCount < max
+  }
+
   return {
     status,
     accessToken,
@@ -95,5 +101,6 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     can,
     canCreateStudy,
+    canActivateStudy,
   }
 })

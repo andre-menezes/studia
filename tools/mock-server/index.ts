@@ -9,7 +9,7 @@ import { randomUUID } from 'node:crypto'
 const PORT = Number(process.env.MOCK_PORT ?? 3000)
 const ORIGIN = process.env.MOCK_CORS_ORIGIN ?? 'http://localhost:5173'
 
-type StudyStatus = 'ACTIVE' | 'PAUSED' | 'COMPLETED' | 'ARCHIVED'
+type StudyStatus = 'CREATED' | 'STARTED' | 'PAUSED' | 'COMPLETED' | 'ARCHIVED'
 
 type Study = {
   id: string
@@ -74,7 +74,7 @@ function corsHeaders(req: Request) {
   headers.set('Access-Control-Allow-Origin', ORIGIN)
   headers.set('Access-Control-Allow-Credentials', 'true')
   headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  headers.set('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+  headers.set('Access-Control-Allow-Methods', 'GET,POST,PATCH,OPTIONS')
   headers.set('Vary', 'Origin')
   return headers
 }
@@ -194,6 +194,7 @@ const server = Bun.serve({
             'GET /studies',
             'POST /studies',
             'GET /studies/:id',
+            'PATCH /studies/:id',
           ],
         }),
       )
@@ -276,9 +277,9 @@ const server = Bun.serve({
       if (usage().studyCreationsThisPeriod.remaining <= 0) {
         return withCors(req, problem(403, 'STUDY_CREATE_LIMIT_REACHED', 'Create limit reached'))
       }
-      const activeCount = studies.filter((s) => s.status === 'ACTIVE').length
-      const nextStatus = body.status ?? 'ACTIVE'
-      if (nextStatus === 'ACTIVE' && activeCount >= entitlements.limits.maxActiveStudies) {
+      const startedCount = studies.filter((s) => s.status === 'STARTED').length
+      const nextStatus = body.status ?? 'CREATED'
+      if (nextStatus === 'STARTED' && startedCount >= entitlements.limits.maxActiveStudies) {
         return withCors(req, problem(403, 'STUDY_ACTIVE_LIMIT_REACHED', 'Active limit reached'))
       }
       const study: Study = {
@@ -304,6 +305,67 @@ const server = Bun.serve({
       }
       const study = studies.find((s) => s.id === studyMatch[1])
       if (!study) return withCors(req, problem(404, 'STUDY_NOT_FOUND', 'Not found'))
+      return withCors(req, json(study))
+    }
+
+    if (req.method === 'PATCH' && studyMatch) {
+      if (!bearerUserId(req)) {
+        return withCors(req, problem(401, 'AUTH_UNAUTHORIZED', 'Unauthorized'))
+      }
+      const study = studies.find((s) => s.id === studyMatch[1])
+      if (!study) return withCors(req, problem(404, 'STUDY_NOT_FOUND', 'Not found'))
+
+      const body = await readJson<{
+        title?: string
+        objective?: string
+        routine?: { frequency?: string; notes?: string }
+        status?: StudyStatus
+      }>(req)
+
+      const hasTitle = body?.title !== undefined
+      const hasObjective = body?.objective !== undefined
+      const hasRoutine = body?.routine !== undefined
+      const hasStatus = body?.status !== undefined
+      if (!hasTitle && !hasObjective && !hasRoutine && !hasStatus) {
+        return withCors(req, problem(422, 'VALIDATION_FAILED', 'Validation failed'))
+      }
+
+      if (hasTitle) {
+        if (!body!.title?.trim()) {
+          return withCors(req, problem(422, 'VALIDATION_FAILED', 'Validation failed'))
+        }
+        study.title = body!.title.trim()
+      }
+      if (hasObjective) {
+        if (!body!.objective?.trim()) {
+          return withCors(req, problem(422, 'VALIDATION_FAILED', 'Validation failed'))
+        }
+        study.objective = body!.objective.trim()
+      }
+      if (hasRoutine) {
+        if (!body!.routine?.frequency?.trim()) {
+          return withCors(req, problem(422, 'VALIDATION_FAILED', 'Validation failed'))
+        }
+        study.routine = {
+          frequency: body!.routine.frequency.trim(),
+          notes: body!.routine.notes?.trim() || undefined,
+        }
+      }
+      if (hasStatus) {
+        const nextStatus = body!.status!
+        const starting = nextStatus === 'STARTED' && study.status !== 'STARTED'
+        if (starting) {
+          const startedCount = studies.filter((s) => s.status === 'STARTED').length
+          if (startedCount >= entitlements.limits.maxActiveStudies) {
+            return withCors(
+              req,
+              problem(403, 'STUDY_ACTIVE_LIMIT_REACHED', 'Active limit reached'),
+            )
+          }
+        }
+        study.status = nextStatus
+      }
+
       return withCors(req, json(study))
     }
 

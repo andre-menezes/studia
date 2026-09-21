@@ -7,23 +7,25 @@ const meta = {
   component: AppAlert,
   tags: ["autodocs"],
   args: {
-    tone: "info",
+    type: "info",
   },
 } satisfies Meta<typeof AppAlert>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Tones: Story = {
+export const Types: Story = {
+  name: "Tipos de alerta",
   render: () => ({
     components: { AppAlert },
     template: `
-      <div class="flex max-w-md flex-col gap-3">
-        <AppAlert tone="error">Algo deu errado ao salvar.</AppAlert>
-        <AppAlert tone="warning">Limite de criação atingido neste período.</AppAlert>
-        <AppAlert tone="success">Estudo criado com sucesso.</AppAlert>
-        <AppAlert tone="info">Dica: um nome curto ajuda no painel.</AppAlert>
-        <AppAlert tone="accent">Organize sem fiscalizar.</AppAlert>
+      <div class="flex max-w-lg flex-col gap-3 bg-background p-4">
+        <AppAlert type="success">Feature publicada com sucesso.</AppAlert>
+        <AppAlert type="alert">Há mudanças não commitadas.</AppAlert>
+        <AppAlert type="error">Falha ao carregar os dados.</AppAlert>
+        <AppAlert type="info">Dica: um nome curto ajuda no painel.</AppAlert>
+        <AppAlert type="warning">Limite de criação próximo do fim.</AppAlert>
+        <AppAlert type="accent">Organize sem fiscalizar.</AppAlert>
       </div>
     `,
   }),
@@ -33,7 +35,7 @@ export const WithTitleAndActions: Story = {
   render: () => ({
     components: { AppAlert, AppButton },
     template: `
-      <AppAlert tone="warning" title="Limite atingido">
+      <AppAlert type="warning" title="Limite atingido">
         Você já usou todas as criações deste período.
         <template #actions>
           <AppButton size="sm" variant="tonal" color="warning">Ver planos</AppButton>
@@ -45,13 +47,30 @@ export const WithTitleAndActions: Story = {
 
 export const Dismissible: Story = {
   args: {
-    tone: "info",
+    type: "success",
     dismissible: true,
     dismissLabel: "Fechar",
+    title: "Estudo criado.",
   },
   render: (args) => ({
     components: { AppAlert },
     setup: () => ({ args }),
-    template: `<AppAlert v-bind="args">Mensagem descartável.</AppAlert>`,
+    template: `
+      <AppAlert v-bind="args">
+        Seu Estudo está pronto para começar.
+      </AppAlert>
+    `,
+  }),
+};
+
+export const Outlined: Story = {
+  render: () => ({
+    components: { AppAlert },
+    template: `
+      <div class="flex max-w-lg flex-col gap-3">
+        <AppAlert type="success" variant="outlined">Sucesso outlined</AppAlert>
+        <AppAlert type="error" variant="outlined">Erro outlined</AppAlert>
+      </div>
+    `,
   }),
 };

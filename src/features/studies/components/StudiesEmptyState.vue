@@ -2,6 +2,7 @@
 import { AppButton, AppEmptyState } from "@/shared/ui";
 
 defineProps<{
+  emptyTitle: string;
   emptyMessage: string;
   createLabel: string;
   canCreate: boolean;
@@ -13,9 +14,16 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <AppEmptyState :description="emptyMessage" icon="menu_book">
+  <AppEmptyState
+    bordered
+    :title="emptyTitle"
+    :description="emptyMessage"
+    icon="menu_book"
+  >
     <template v-if="canCreate" #actions>
-      <AppButton @click="emit('create')">{{ createLabel }}</AppButton>
+      <AppButton size="lg" prepend-icon="add" @click="emit('create')">
+        {{ createLabel }}
+      </AppButton>
     </template>
   </AppEmptyState>
 </template>

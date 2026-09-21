@@ -16,14 +16,31 @@ export const WithMetaAndActions: Story = {
   render: () => ({
     components: { AppTopBar, AppButton },
     template: `
-      <AppTopBar>
+      <div class="min-h-[40vh] bg-background p-0">
+        <AppTopBar>
+          <template #brand>
+            <span class="text-base font-semibold text-primary">Studia</span>
+          </template>
+          <template #meta>André</template>
+          <template #actions>
+            <AppButton variant="text" color="muted">Sair</AppButton>
+          </template>
+        </AppTopBar>
+      </div>
+    `,
+  }),
+};
+
+export const FullBleedLegacy: Story = {
+  args: { floating: false, bordered: true },
+  render: (args) => ({
+    components: { AppTopBar, AppButton },
+    setup: () => ({ args }),
+    template: `
+      <AppTopBar v-bind="args">
         <template #brand>
-          <div class="flex items-center gap-3">
-            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-sm font-bold text-white" aria-hidden="true">S</span>
-            <span class="text-sm font-semibold text-primary">Studia</span>
-          </div>
+          <span class="text-sm font-semibold text-primary">Studia</span>
         </template>
-        <template #meta>André</template>
         <template #actions>
           <AppButton variant="text" color="muted">Sair</AppButton>
         </template>
@@ -38,11 +55,13 @@ export const NonSticky: Story = {
     components: { AppTopBar },
     setup: () => ({ args }),
     template: `
-      <AppTopBar v-bind="args">
-        <template #brand>
-          <span class="text-sm font-semibold text-primary">Studia</span>
-        </template>
-      </AppTopBar>
+      <div class="min-h-[20vh] bg-background">
+        <AppTopBar v-bind="args">
+          <template #brand>
+            <span class="text-sm font-semibold text-primary">Studia</span>
+          </template>
+        </AppTopBar>
+      </div>
     `,
   }),
 };
