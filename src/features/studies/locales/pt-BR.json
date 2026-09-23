@@ -4,8 +4,15 @@
       "title": "Seus Estudos",
       "subtitle": "O que você está estudando agora?",
       "create": "Criar Estudo",
-      "emptyTitle": "Nenhum Estudo ainda",
-      "empty": "Você ainda não criou nenhum Estudo. Comece organizando o primeiro.",
+      "emptyEyebrow": "Seu board de estudos",
+      "emptyTitle": "Monte seu primeiro Estudo",
+      "empty": "Organize objetivo, rotina e acompanhamento num board simples — no seu ritmo, sem pressão.",
+      "emptyPreviewLabel": "Prévia do board",
+      "emptyBenefits": {
+        "objective": "Defina um objetivo claro para o que quer aprender",
+        "routine": "Planeje uma rotina que caiba na sua semana",
+        "board": "Acompanhe o progresso nas colunas de status"
+      },
       "start": "Iniciar estudo",
       "searchLabel": "Buscar",
       "searchPlaceholder": "Nome do Estudo",
@@ -17,7 +24,11 @@
       "createSuccessTitle": "Estudo criado.",
       "createSuccessMessage": "{title} está pronto para começar.",
       "createSuccessFallback": "Seu Estudo",
-      "dismissAlert": "Fechar"
+      "dismissAlert": "Fechar",
+      "archiveConfirmTitle": "Arquivar este Estudo?",
+      "archiveConfirm": "Essa ação não poderá ser desfeita. O Estudo sairá do fluxo ativo e não poderá ser movido de volta.",
+      "archiveConfirmKeep": "Manter onde está",
+      "archiveConfirmAction": "Arquivar"
     },
     "detail": {
       "subtitle": "Revise e ajuste o que precisar — sem refazer o assistente.",
@@ -42,6 +53,54 @@
       "COMPLETED": "Concluído",
       "ARCHIVED": "Arquivado"
     },
+    "routine": {
+      "days": {
+        "MON": "Seg",
+        "TUE": "Ter",
+        "WED": "Qua",
+        "THU": "Qui",
+        "FRI": "Sex",
+        "SAT": "Sáb",
+        "SUN": "Dom"
+      },
+      "timeHour": "Horas",
+      "timeMinute": "Minutos",
+      "timeHourUp": "Aumentar horas",
+      "timeHourDown": "Diminuir horas",
+      "timeMinuteUp": "Aumentar minutos",
+      "timeMinuteDown": "Diminuir minutos",
+      "pomodoroLabel": "Técnica Pomodoro",
+      "pomodoroHint": "Ao terminar o tempo de estudo, inicia o descanso automaticamente.",
+      "pomodoroNeedsDuration": "Defina um Tempo maior que 00:00 para habilitar o Pomodoro.",
+      "pomodoroOn": "Ativado",
+      "pomodoroOff": "Desativado",
+      "pomodoroRest": "Descanso (minutos)"
+    },
+    "timer": {
+      "title": "Timer da sessão",
+      "focusAndRest": "Foco e Descanso",
+      "preset": "Tempo planejado: {duration}",
+      "presetPomodoro": "Tempo planejado: {duration} · Pomodoro ({rest}min de descanso)",
+      "noPreset": "Sem duração pré-definida — o timer conta para cima.",
+      "modeStudy": "Estudo",
+      "modeRest": "Descanso",
+      "start": "Iniciar timer",
+      "pause": "Pausar",
+      "resume": "Retomar",
+      "nextBlock": "Próximo bloco",
+      "reset": "Reiniciar",
+      "editDuration": "Editar tempo",
+      "restMinutes": "Descanso (minutos)",
+      "startRest": "Iniciar descanso",
+      "skipRest": "Encerrar descanso",
+      "done": "Tempo da sessão concluído.",
+      "noticeRestStart": "Bloco de estudo concluído — hora do descanso.",
+      "noticeRestEnd": "Descanso concluído — pronto para o próximo bloco.",
+      "offDayTitle": "Hoje não é um dia de estudo",
+      "offDayConfirm": "Este Estudo não está agendado para hoje. Deseja iniciar o timer mesmo assim?",
+      "offDayStartAnyway": "Iniciar mesmo assim",
+      "offDayKeep": "Não iniciar"
+    },
     "wizard": {
       "title": "Novo Estudo",
       "step": "Etapa {step} de {total}",
@@ -55,6 +114,8 @@
         "title": "Nome",
         "objective": "Objetivo",
         "frequency": "Frequência / rotina",
+        "days": "Dias da semana",
+        "time": "Tempo",
         "notes": "Notas (opcional)"
       },
       "prompts": {
@@ -69,10 +130,10 @@
           "placeholder": "Passar na prova final com nota acima de 8"
         },
         "routine": {
-          "heading": "Com que frequência você vai estudar?",
-          "hint": "Isso ajuda a organizar sua rotina — sem cobrar resultado.",
-          "frequencyPlaceholder": "3x por semana",
-          "notesPlaceholder": "Manhãs, sessões de 1h"
+          "heading": "Quando você vai estudar?",
+          "hint": "Escolha os dias e quanto tempo quer dedicar — sem cobrança de resultado.",
+          "notesPlaceholder": "Ex.: sessões focadas, foco em exercícios",
+          "timeHint": "00:00 significa que você ainda não define uma duração. Esse tempo alimenta o timer no detalhe do Estudo."
         },
         "confirm": {
           "heading": "Revise antes de criar"
