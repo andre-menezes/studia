@@ -12,9 +12,21 @@ import {
 import type { Study, StudyStatus, UpdateStudyInput } from "../domain/study";
 import { STUDY_STATUS_ORDER } from "../domain/study";
 import {
+  DEFAULT_POMODORO_REST_MINUTES,
+  DEFAULT_ROUTINE_TIME,
+  WEEK_DAYS,
+  isRoutineScheduleValid,
+  routineFromSchedule,
+  scheduleFromRoutine,
+  type StudyPomodoro,
+  type StudyRoutineTime,
+  type WeekDay,
+} from "../domain/studyRoutine";
+import {
   studyStatusButtonColor,
   studyStatusIcon,
 } from "./studyStatusUi";
+import StudyRoutineFields from "./StudyRoutineFields.vue";
 
 export type StudyEditField = "title" | "objective" | "routine" | "status";
 
@@ -47,18 +59,36 @@ const { t } = useI18n();
 
 const titleDraft = ref("");
 const objectiveDraft = ref("");
-const frequencyDraft = ref("");
+const daysDraft = ref<WeekDay[]>([]);
+const timeDraft = ref<StudyRoutineTime>({ ...DEFAULT_ROUTINE_TIME });
 const notesDraft = ref("");
+const pomodoroDraft = ref<StudyPomodoro>({
+  enabled: false,
+  restMinutes: DEFAULT_POMODORO_REST_MINUTES,
+});
 const statusDraft = ref<StudyStatus>("CREATED");
+const routineFieldsRef = ref<{ flush: () => StudyRoutineTime } | null>(null);
+
+const dayLabels = computed(() => {
+  const labels = {} as Record<WeekDay, string>;
+  for (const day of WEEK_DAYS) {
+    labels[day] = t(`studies.routine.days.${day}`);
+  }
+  return labels;
+});
 
 watch(
-  () => [props.open, props.field, props.study] as const,
-  ([open, field, study]) => {
-    if (!open || !field || !study) return;
+  () => [props.open, props.field] as const,
+  ([open, field]) => {
+    if (!open || !field || !props.study) return;
+    const study = props.study;
     titleDraft.value = study.title;
     objectiveDraft.value = study.objective;
-    frequencyDraft.value = study.routine.frequency;
-    notesDraft.value = study.routine.notes ?? "";
+    const schedule = scheduleFromRoutine(study.routine);
+    daysDraft.value = [...schedule.days];
+    timeDraft.value = { ...schedule.time };
+    notesDraft.value = schedule.notes;
+    pomodoroDraft.value = { ...schedule.pomodoro };
     statusDraft.value = study.status;
   },
   { immediate: true },
@@ -77,7 +107,7 @@ const canSave = computed(() => {
     case "objective":
       return objectiveDraft.value.trim().length > 0;
     case "routine":
-      return frequencyDraft.value.trim().length > 0;
+      return isRoutineScheduleValid(daysDraft.value, timeDraft.value);
     case "status": {
       if (statusDraft.value !== "STARTED") return true;
       if (props.study?.status === "STARTED") return true;
@@ -93,6 +123,10 @@ function close() {
   emit("cancel");
 }
 
+function onTimeUpdate(value: StudyRoutineTime) {
+  timeDraft.value = value;
+}
+
 function onSave() {
   if (!props.field || !canSave.value) return;
   let payload: UpdateStudyInput;
@@ -103,14 +137,22 @@ function onSave() {
     case "objective":
       payload = { objective: objectiveDraft.value.trim() };
       break;
-    case "routine":
+    case "routine": {
+      // Prefer flush() so typed values commit even without blur; fall back to draft.
+      const flushed = routineFieldsRef.value?.flush?.();
+      const time = flushed ?? { ...timeDraft.value };
+      timeDraft.value = { ...time };
       payload = {
-        routine: {
-          frequency: frequencyDraft.value.trim(),
-          notes: notesDraft.value.trim() || undefined,
-        },
+        routine: routineFromSchedule(
+          daysDraft.value,
+          time,
+          dayLabels.value,
+          notesDraft.value,
+          pomodoroDraft.value,
+        ),
       };
       break;
+    }
     case "status":
       payload = { status: statusDraft.value };
       break;
@@ -148,19 +190,26 @@ function onSave() {
           :rows="4"
         />
 
-        <template v-else-if="field === 'routine'">
-          <AppTextField
-            v-model="frequencyDraft"
-            required
-            prepend-icon="event_repeat"
-            :label="t('studies.wizard.fields.frequency')"
-          />
-          <AppTextarea
-            v-model="notesDraft"
-            :label="t('studies.wizard.fields.notes')"
-            :rows="3"
-          />
-        </template>
+        <StudyRoutineFields
+          v-else-if="field === 'routine'"
+          ref="routineFieldsRef"
+          :days="daysDraft"
+          :time="timeDraft"
+          :notes="notesDraft"
+          :pomodoro="pomodoroDraft"
+          required
+          :days-label="t('studies.wizard.fields.days')"
+          :time-label="t('studies.wizard.fields.time')"
+          :notes-label="t('studies.wizard.fields.notes')"
+          :notes-placeholder="
+            t('studies.wizard.prompts.routine.notesPlaceholder')
+          "
+          :time-hint="t('studies.wizard.prompts.routine.timeHint')"
+          @update:days="daysDraft = $event"
+          @update:time="onTimeUpdate"
+          @update:notes="notesDraft = $event"
+          @update:pomodoro="pomodoroDraft = $event"
+        />
 
         <div v-else-if="field === 'status'" class="flex flex-col gap-2">
           <p class="text-sm text-muted">{{ t("studies.detail.statusHint") }}</p>

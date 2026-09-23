@@ -5,6 +5,7 @@ defineProps<{
   isFirst: boolean;
   isLast: boolean;
   pending: boolean;
+  canContinue?: boolean;
   backLabel: string;
   cancelLabel: string;
   continueLabel: string;
@@ -48,6 +49,7 @@ const emit = defineEmits<{
       v-if="!isLast"
       size="lg"
       append-icon="arrow_forward"
+      :disabled="canContinue === false"
       @click="emit('next')"
     >
       {{ continueLabel }}
@@ -57,7 +59,7 @@ const emit = defineEmits<{
       size="lg"
       prepend-icon="add"
       :loading="pending"
-      :disabled="pending"
+      :disabled="pending || canContinue === false"
       @click="emit('submit')"
     >
       {{ pending ? loadingLabel : submitLabel }}

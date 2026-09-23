@@ -1,3 +1,7 @@
+import type { StudyRoutineTime, WeekDay, StudyPomodoro } from './studyRoutine'
+
+export type { WeekDay, StudyRoutineTime, StudyPomodoro } from './studyRoutine'
+
 export type StudyStatus =
   | 'CREATED'
   | 'STARTED'
@@ -6,7 +10,12 @@ export type StudyStatus =
   | 'ARCHIVED'
 
 export type StudyRoutine = {
+  /** Display / API cadence label (derived from days + time when structured). */
   frequency: string
+  daysOfWeek?: WeekDay[]
+  time?: StudyRoutineTime
+  /** Pomodoro: auto rest after each study block (requires positive duration). */
+  pomodoro?: StudyPomodoro
   notes?: string
 }
 
@@ -17,6 +26,8 @@ export type Study = {
   routine: StudyRoutine
   status: StudyStatus
   createdAt: string
+  /** Accumulated study session seconds (excludes rest). */
+  totalStudySeconds?: number
 }
 
 export type CreateStudyInput = {
@@ -31,6 +42,7 @@ export type UpdateStudyInput = {
   objective?: string
   routine?: StudyRoutine
   status?: StudyStatus
+  totalStudySeconds?: number
 }
 
 /** Board column order on the home screen. */

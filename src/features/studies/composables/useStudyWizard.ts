@@ -1,5 +1,13 @@
 import { computed, reactive, ref } from 'vue'
 import type { CreateStudyInput } from '../domain/study'
+import {
+  DEFAULT_POMODORO_REST_MINUTES,
+  DEFAULT_ROUTINE_TIME,
+  routineFromSchedule,
+  type StudyPomodoro,
+  type StudyRoutineTime,
+  type WeekDay,
+} from '../domain/studyRoutine'
 
 export type WizardStep = 'identity' | 'objective' | 'routine' | 'confirm'
 
@@ -10,8 +18,13 @@ export function useStudyWizard() {
   const draft = reactive({
     title: '',
     objective: '',
-    frequency: '',
+    days: [] as WeekDay[],
+    time: { ...DEFAULT_ROUTINE_TIME } as StudyRoutineTime,
     notes: '',
+    pomodoro: {
+      enabled: false,
+      restMinutes: DEFAULT_POMODORO_REST_MINUTES,
+    } as StudyPomodoro,
   })
 
   const stepIndex = computed(() => STEPS.indexOf(currentStep.value))
@@ -40,20 +53,28 @@ export function useStudyWizard() {
   function reset() {
     draft.title = ''
     draft.objective = ''
-    draft.frequency = ''
+    draft.days = []
+    draft.time = { ...DEFAULT_ROUTINE_TIME }
     draft.notes = ''
+    draft.pomodoro = {
+      enabled: false,
+      restMinutes: DEFAULT_POMODORO_REST_MINUTES,
+    }
     currentStep.value = STEPS[0]!
     furthestIndex.value = 0
   }
 
-  function toPayload(): CreateStudyInput {
+  function toPayload(dayLabels: Record<WeekDay, string>): CreateStudyInput {
     return {
       title: draft.title.trim(),
       objective: draft.objective.trim(),
-      routine: {
-        frequency: draft.frequency.trim(),
-        notes: draft.notes.trim() || undefined,
-      },
+      routine: routineFromSchedule(
+        draft.days,
+        draft.time,
+        dayLabels,
+        draft.notes,
+        draft.pomodoro,
+      ),
       status: 'CREATED',
     }
   }

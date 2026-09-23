@@ -10,7 +10,9 @@ Permitir que o usuário autenticado crie um **Study** por um fluxo guiado em eta
 ## Escopo
 
 - Fluxo de criação de Study no frontend (feature `studies`).
-- Etapas de UI: identidade → objetivo → rotina/frequência → confirmação → persistência.
+- Etapas de UI: identidade → objetivo → rotina (dias da semana + **Tempo** = duração da sessão + opção **Pomodoro** com descanso) → confirmação → persistência.
+- Tempo `00:00` = sem duração pré-definida (válido); valores digitáveis com limites hora 0–23 e minuto 0–59.
+- Pomodoro só disponível com Tempo > 00:00; descanso padrão 5 min (1–60).
 - Checagens de entitlement/limites na UX antes de concluir.
 - Integração via `studyService` → `shared/http` → Mock/API.
 

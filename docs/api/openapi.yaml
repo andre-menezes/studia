@@ -295,7 +295,45 @@ components:
       properties:
         frequency:
           type: string
-          description: Simple declared cadence (e.g. daily, weekdays, custom text)
+          description: >
+            Human-readable cadence label (e.g. "Mon, Wed · 1h 30min").
+            Derived from daysOfWeek + session duration (`time`) when present.
+            Duration 00:00 is omitted from the label.
+        daysOfWeek:
+          type: array
+          items:
+            type: string
+            enum: [MON, TUE, WED, THU, FRI, SAT, SUN]
+          description: Selected weekdays for the study routine
+        time:
+          type: object
+          description: >
+            Planned session duration (not clock time of day).
+            hour 0–23, minute 0–59; 00:00 means no duration preset.
+          required: [hour, minute]
+          properties:
+            hour:
+              type: integer
+              minimum: 0
+              maximum: 23
+            minute:
+              type: integer
+              minimum: 0
+              maximum: 59
+        pomodoro:
+          type: object
+          description: >
+            Optional Pomodoro mode. Only meaningful when `time` is a positive duration.
+            When enabled, finishing a study block auto-starts the rest timer.
+          properties:
+            enabled:
+              type: boolean
+            restMinutes:
+              type: integer
+              minimum: 1
+              maximum: 60
+              default: 5
+              description: Rest duration in minutes after each study block.
         notes:
           type: string
     Study:
@@ -316,6 +354,12 @@ components:
         createdAt:
           type: string
           format: date-time
+        totalStudySeconds:
+          type: integer
+          minimum: 0
+          description: >
+            Accumulated seconds of study session time (excludes rest/break).
+            Used for dedication metrics across the study lifecycle.
     CreateStudyRequest:
       type: object
       required: [title, objective, routine]
@@ -346,6 +390,10 @@ components:
           $ref: '#/components/schemas/StudyRoutine'
         status:
           $ref: '#/components/schemas/StudyStatus'
+        totalStudySeconds:
+          type: integer
+          minimum: 0
+          description: Accumulated study seconds (excludes rest)
     Problem:
       type: object
       required: [type, title, status, code]

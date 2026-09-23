@@ -1,21 +1,40 @@
 <script setup lang="ts">
-import { AppTextField } from "@/shared/ui";
+import { ref } from "vue";
+import type {
+  StudyPomodoro,
+  StudyRoutineTime,
+  WeekDay,
+} from "../domain/studyRoutine";
+import StudyRoutineFields from "./StudyRoutineFields.vue";
 
 defineProps<{
-  frequency: string;
+  days: WeekDay[];
+  time: StudyRoutineTime;
   notes: string;
-  frequencyLabel: string;
-  notesLabel: string;
+  pomodoro: StudyPomodoro;
   heading: string;
   hint: string;
-  frequencyPlaceholder: string;
+  daysLabel: string;
+  timeLabel: string;
+  notesLabel: string;
   notesPlaceholder: string;
+  timeHint?: string;
 }>();
 
 const emit = defineEmits<{
-  "update:frequency": [value: string];
+  "update:days": [value: WeekDay[]];
+  "update:time": [value: StudyRoutineTime];
   "update:notes": [value: string];
+  "update:pomodoro": [value: StudyPomodoro];
 }>();
+
+const fieldsRef = ref<{ flush: () => StudyRoutineTime } | null>(null);
+
+function flush(): StudyRoutineTime | undefined {
+  return fieldsRef.value?.flush();
+}
+
+defineExpose({ flush });
 </script>
 
 <template>
@@ -24,18 +43,22 @@ const emit = defineEmits<{
       <h2 class="text-xl font-semibold text-foreground">{{ heading }}</h2>
       <p class="text-base text-muted">{{ hint }}</p>
     </div>
-    <AppTextField
-      :model-value="frequency"
+    <StudyRoutineFields
+      ref="fieldsRef"
+      :days="days"
+      :time="time"
+      :notes="notes"
+      :pomodoro="pomodoro"
       required
-      :label="frequencyLabel"
-      :placeholder="frequencyPlaceholder"
-      @update:model-value="emit('update:frequency', $event)"
-    />
-    <AppTextField
-      :model-value="notes"
-      :label="notesLabel"
-      :placeholder="notesPlaceholder"
-      @update:model-value="emit('update:notes', $event)"
+      :days-label="daysLabel"
+      :time-label="timeLabel"
+      :notes-label="notesLabel"
+      :notes-placeholder="notesPlaceholder"
+      :time-hint="timeHint"
+      @update:days="emit('update:days', $event)"
+      @update:time="emit('update:time', $event)"
+      @update:notes="emit('update:notes', $event)"
+      @update:pomodoro="emit('update:pomodoro', $event)"
     />
   </section>
 </template>
