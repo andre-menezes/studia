@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/vue3";
+import { ref } from "vue";
 import AppAlert from "./AppAlert.vue";
 import AppButton from "./AppButton.vue";
 
@@ -59,6 +60,41 @@ export const Dismissible: Story = {
       <AppAlert v-bind="args">
         Seu Estudo está pronto para começar.
       </AppAlert>
+    `,
+  }),
+};
+
+export const FloatingTimed: Story = {
+  name: "Toast flutuante (5s)",
+  args: {
+    type: "success",
+    floating: true,
+    dismissLabel: "Fechar",
+    title: "Estudo criado.",
+  },
+  render: (args) => ({
+    components: { AppAlert },
+    setup: () => {
+      const visible = ref(true);
+      return {
+        args,
+        visible,
+        onDismiss: () => {
+          visible.value = false;
+        },
+      };
+    },
+    template: `
+      <div class="min-h-40 bg-background p-4 text-sm text-muted">
+        Conteúdo da página atrás do toast.
+        <AppAlert
+          v-if="visible"
+          v-bind="args"
+          @dismiss="onDismiss"
+        >
+          Seu Estudo está pronto para começar.
+        </AppAlert>
+      </div>
     `,
   }),
 };
