@@ -4,8 +4,15 @@
       "title": "Your Studies",
       "subtitle": "What are you studying now?",
       "create": "Create Study",
-      "emptyTitle": "No Studies yet",
-      "empty": "You haven't created a Study yet. Start by organizing your first one.",
+      "emptyEyebrow": "Your study board",
+      "emptyTitle": "Set up your first Study",
+      "empty": "Organize goal, routine, and progress on a simple board — at your pace, no pressure.",
+      "emptyPreviewLabel": "Board preview",
+      "emptyBenefits": {
+        "objective": "Set a clear goal for what you want to learn",
+        "routine": "Plan a routine that fits your week",
+        "board": "Track progress across status columns"
+      },
       "start": "Start study",
       "searchLabel": "Search",
       "searchPlaceholder": "Study name",
@@ -17,7 +24,11 @@
       "createSuccessTitle": "Study created.",
       "createSuccessMessage": "{title} is ready to start.",
       "createSuccessFallback": "Your Study",
-      "dismissAlert": "Dismiss"
+      "dismissAlert": "Dismiss",
+      "archiveConfirmTitle": "Archive this Study?",
+      "archiveConfirm": "This cannot be undone. The Study will leave the active flow and cannot be moved back.",
+      "archiveConfirmKeep": "Keep it here",
+      "archiveConfirmAction": "Archive"
     },
     "detail": {
       "subtitle": "Review and adjust what you need — without redoing the wizard.",
@@ -42,6 +53,54 @@
       "COMPLETED": "Completed",
       "ARCHIVED": "Archived"
     },
+    "routine": {
+      "days": {
+        "MON": "Mon",
+        "TUE": "Tue",
+        "WED": "Wed",
+        "THU": "Thu",
+        "FRI": "Fri",
+        "SAT": "Sat",
+        "SUN": "Sun"
+      },
+      "timeHour": "Hours",
+      "timeMinute": "Minutes",
+      "timeHourUp": "Increase hours",
+      "timeHourDown": "Decrease hours",
+      "timeMinuteUp": "Increase minutes",
+      "timeMinuteDown": "Decrease minutes",
+      "pomodoroLabel": "Pomodoro technique",
+      "pomodoroHint": "When the study block ends, break starts automatically.",
+      "pomodoroNeedsDuration": "Set a duration greater than 00:00 to enable Pomodoro.",
+      "pomodoroOn": "On",
+      "pomodoroOff": "Off",
+      "pomodoroRest": "Break (minutes)"
+    },
+    "timer": {
+      "title": "Session timer",
+      "focusAndRest": "Focus and Rest",
+      "preset": "Planned duration: {duration}",
+      "presetPomodoro": "Planned duration: {duration} · Pomodoro ({rest}min break)",
+      "noPreset": "No preset duration — the timer counts up.",
+      "modeStudy": "Study",
+      "modeRest": "Break",
+      "start": "Start timer",
+      "pause": "Pause",
+      "resume": "Resume",
+      "nextBlock": "Next block",
+      "reset": "Reset",
+      "editDuration": "Edit duration",
+      "restMinutes": "Break (minutes)",
+      "startRest": "Start break",
+      "skipRest": "End break",
+      "done": "Session time complete.",
+      "noticeRestStart": "Study block done — time for a break.",
+      "noticeRestEnd": "Break over — ready for the next block.",
+      "offDayTitle": "Today is not a study day",
+      "offDayConfirm": "This Study is not scheduled for today. Start the timer anyway?",
+      "offDayStartAnyway": "Start anyway",
+      "offDayKeep": "Don't start"
+    },
     "wizard": {
       "title": "New Study",
       "step": "Step {step} of {total}",
@@ -55,6 +114,8 @@
         "title": "Name",
         "objective": "Objective",
         "frequency": "Frequency / routine",
+        "days": "Days of the week",
+        "time": "Duration",
         "notes": "Notes (optional)"
       },
       "prompts": {
@@ -69,10 +130,10 @@
           "placeholder": "Pass the final exam with a grade above 8"
         },
         "routine": {
-          "heading": "How often will you study?",
-          "hint": "This helps organize your routine — without policing results.",
-          "frequencyPlaceholder": "3x per week",
-          "notesPlaceholder": "Mornings, 1h sessions"
+          "heading": "When will you study?",
+          "hint": "Pick the days and how long you want to spend — without policing results.",
+          "notesPlaceholder": "e.g. focused sessions, practice problems",
+          "timeHint": "00:00 means no duration yet. This value presets the timer on the Study detail."
         },
         "confirm": {
           "heading": "Review before creating"

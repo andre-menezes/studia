@@ -12,6 +12,13 @@ import {
 } from "@/shared/ui";
 import type { WizardStep } from "../composables/useStudyWizard";
 import { useStudyWizard } from "../composables/useStudyWizard";
+import {
+  WEEK_DAYS,
+  buildFrequencyLabel,
+  isRoutineScheduleValid,
+  type StudyRoutineTime,
+  type WeekDay,
+} from "../domain/studyRoutine";
 import { useStudyListStore } from "../stores/studyListStore";
 import StudiesAppBar from "../components/StudiesAppBar.vue";
 import StudyWizardActions from "../components/StudyWizardActions.vue";
@@ -43,6 +50,10 @@ const errorCode = ref<string | null>(null);
 const pending = ref(false);
 const cancelDialogOpen = ref(false);
 const loggingOut = ref(false);
+const routineStepRef = ref<{ flush: () => StudyRoutineTime | undefined } | null>(
+  null,
+);
+
 
 const fieldOwnerStep: Record<"title" | "objective" | "frequency", WizardStep> =
   {
@@ -81,7 +92,45 @@ const errorMessage = computed(() =>
     : null,
 );
 
+const dayLabels = computed(() => {
+  const labels = {} as Record<WeekDay, string>;
+  for (const day of WEEK_DAYS) {
+    labels[day] = t(`studies.routine.days.${day}`);
+  }
+  return labels;
+});
+
+const frequencyPreview = computed(() => {
+  if (!isRoutineScheduleValid(draft.days, draft.time)) return "";
+  return buildFrequencyLabel(
+    draft.days,
+    draft.time,
+    dayLabels.value,
+    draft.pomodoro,
+  );
+});
+
+const canAdvance = computed(() => {
+  switch (currentStep.value) {
+    case "identity":
+      return draft.title.trim().length > 0;
+    case "objective":
+      return draft.objective.trim().length > 0;
+    case "routine":
+      return isRoutineScheduleValid(draft.days, draft.time);
+    case "confirm":
+      return (
+        draft.title.trim().length > 0 &&
+        draft.objective.trim().length > 0 &&
+        isRoutineScheduleValid(draft.days, draft.time)
+      );
+    default:
+      return false;
+  }
+});
+
 function onStepChange(value: string | number) {
+  flushRoutineIfNeeded();
   goToStep(String(value) as WizardStep);
 }
 
@@ -90,15 +139,34 @@ function editField(field: "title" | "objective" | "frequency") {
   goToStep(fieldOwnerStep[field]);
 }
 
+function flushRoutineIfNeeded() {
+  if (currentStep.value !== "routine") return;
+  const flushed = routineStepRef.value?.flush();
+  if (flushed) draft.time = flushed;
+}
+
+function onBack() {
+  flushRoutineIfNeeded();
+  back();
+}
+
+function onNext() {
+  flushRoutineIfNeeded();
+  if (!canAdvance.value) return;
+  next();
+}
+
 async function submit() {
+  flushRoutineIfNeeded();
   if (!limits.canCreateStudy()) {
     errorCode.value = "STUDY_CREATE_LIMIT_REACHED";
     return;
   }
+  if (!canAdvance.value) return;
   errorCode.value = null;
   pending.value = true;
   try {
-    const study = await studies.createStudy(toPayload());
+    const study = await studies.createStudy(toPayload(dayLabels.value));
     await router.push({
       name: "studies-home",
       query: { created: study.id },
@@ -114,7 +182,7 @@ function hasDraftData() {
   return Boolean(
     draft.title.trim() ||
     draft.objective.trim() ||
-    draft.frequency.trim() ||
+    draft.days.length > 0 ||
     draft.notes.trim(),
   );
 }
@@ -229,28 +297,32 @@ async function onLogout() {
             />
             <StudyWizardRoutineStep
               v-else-if="currentStep === 'routine'"
+              ref="routineStepRef"
               :key="'routine'"
-              :frequency="draft.frequency"
+              :days="draft.days"
+              :time="draft.time"
               :notes="draft.notes"
-              :frequency-label="t('studies.wizard.fields.frequency')"
+              :pomodoro="draft.pomodoro"
+              :days-label="t('studies.wizard.fields.days')"
+              :time-label="t('studies.wizard.fields.time')"
               :notes-label="t('studies.wizard.fields.notes')"
               :heading="t('studies.wizard.prompts.routine.heading')"
               :hint="t('studies.wizard.prompts.routine.hint')"
-              :frequency-placeholder="
-                t('studies.wizard.prompts.routine.frequencyPlaceholder')
-              "
               :notes-placeholder="
                 t('studies.wizard.prompts.routine.notesPlaceholder')
               "
-              @update:frequency="draft.frequency = $event"
+              :time-hint="t('studies.wizard.prompts.routine.timeHint')"
+              @update:days="draft.days = $event"
+              @update:time="draft.time = $event"
               @update:notes="draft.notes = $event"
+              @update:pomodoro="draft.pomodoro = $event"
             />
             <StudyWizardConfirmStep
               v-else
               :key="'confirm'"
               :title="draft.title"
               :objective="draft.objective"
-              :frequency="draft.frequency"
+              :frequency="frequencyPreview"
               :notes="draft.notes"
               :title-label="t('studies.wizard.fields.title')"
               :objective-label="t('studies.wizard.fields.objective')"
@@ -271,14 +343,15 @@ async function onLogout() {
           :is-first="isFirst"
           :is-last="isLast"
           :pending="pending"
+          :can-continue="canAdvance"
           :back-label="t('common.back')"
           :cancel-label="t('common.cancel')"
           :continue-label="t('common.continue')"
           :submit-label="t('studies.wizard.submit')"
           :loading-label="t('common.loading')"
-          @back="back()"
+          @back="onBack"
           @cancel="cancel"
-          @next="next()"
+          @next="onNext"
           @submit="submit"
         />
       </div>

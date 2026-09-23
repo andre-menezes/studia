@@ -161,6 +161,14 @@ button[disabled],
   -webkit-font-smoothing: antialiased;
 }
 
+.material-symbols-outlined.material-symbols-fill {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
 /* Wizard step transition */
 .wizard-step-enter-active {
   transition:
@@ -196,6 +204,14 @@ button[disabled],
   animation: success-pop 400ms ease-out both;
 }
 
+/* Native select chevron with right padding room */
+.studia-select-chevron {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.15rem;
+}
+
 /* Studia custom scrollbars (board columns, overflow panels) */
 .studia-scrollbar {
   scrollbar-width: thin;
@@ -228,6 +244,93 @@ button[disabled],
   background: transparent;
 }
 
+/* Kanban drag-and-drop */
+.kanban-card {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.kanban-card.is-dragging {
+  opacity: 0.4;
+  transform: scale(0.98);
+  cursor: grabbing;
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--accent) 45%, var(--border));
+  background-color: color-mix(in srgb, var(--surface) 55%, transparent);
+}
+
+.kanban-card.is-draggable {
+  cursor: grab;
+}
+
+.kanban-card.is-draggable:active {
+  cursor: grabbing;
+}
+
+.kanban-card.is-drag-ghost {
+  position: fixed !important;
+  top: -9999px !important;
+  left: 0 !important;
+  z-index: 0;
+  margin: 0;
+  pointer-events: none;
+  opacity: 1;
+  transform: rotate(2deg) scale(1.03);
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.22),
+    0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+  background-color: var(--surface);
+}
+
+.kanban-column {
+  transition:
+    opacity 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease,
+    background-color 180ms ease;
+}
+
+.kanban-column.is-drop-disabled {
+  opacity: 0.45;
+  filter: grayscale(0.35);
+  pointer-events: none;
+}
+
+.kanban-column.is-drop-target {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent),
+    var(--card-shadow);
+}
+
+.kanban-column.is-drop-over {
+  background-color: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  box-shadow:
+    0 0 0 2px var(--accent),
+    0 12px 32px rgba(15, 23, 42, 0.12);
+}
+
+.kanban-column-list {
+  transition: background-color 180ms ease;
+}
+
+.kanban-column.is-drop-over .kanban-column-list {
+  background-color: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-radius: 1rem;
+}
+
+.kanban-drop-indicator {
+  height: 3px;
+  margin: 2px 4px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .wizard-step-enter-active,
   .wizard-step-leave-active {
@@ -239,5 +342,14 @@ button[disabled],
   }
   .success-pop {
     animation: none;
+  }
+  .kanban-card,
+  .kanban-column,
+  .kanban-column-list {
+    transition: none;
+  }
+  .kanban-card.is-dragging,
+  .kanban-card.is-drag-ghost {
+    transform: none;
   }
 }

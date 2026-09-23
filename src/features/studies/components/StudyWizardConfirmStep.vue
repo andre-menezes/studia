@@ -34,7 +34,7 @@ const emit = defineEmits<{
         </div>
         <AppButton
           variant="text"
-          color="accent"
+          color="primary"
           size="sm"
           prepend-icon="edit"
           @click="emit('edit', 'title')"
@@ -51,7 +51,7 @@ const emit = defineEmits<{
         </div>
         <AppButton
           variant="text"
-          color="accent"
+          color="primary"
           size="sm"
           prepend-icon="edit"
           @click="emit('edit', 'objective')"
@@ -70,7 +70,7 @@ const emit = defineEmits<{
         </div>
         <AppButton
           variant="text"
-          color="accent"
+          color="primary"
           size="sm"
           prepend-icon="edit"
           @click="emit('edit', 'frequency')"

@@ -29,6 +29,8 @@ const props = withDefaults(
     icon?: string;
     /** Render only the icon (square hit target). Requires `icon` or `#icon` + `ariaLabel`. */
     iconOnly?: boolean;
+    /** Use Material Symbols FILL=1 for icons in this button. */
+    iconFill?: boolean;
     prependIcon?: string;
     appendIcon?: string;
     block?: boolean;
@@ -41,9 +43,10 @@ const props = withDefaults(
   }>(),
   {
     variant: "filled",
-    color: "accent",
+    color: "primary",
     size: "md",
     iconOnly: false,
+    iconFill: false,
     block: false,
     rounded: true,
     disabled: false,
@@ -187,6 +190,23 @@ const variantClasses = computed(() => {
   }
 });
 
+const iconFillStyle = computed(() =>
+  props.iconFill
+    ? {
+        fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24",
+      }
+    : undefined,
+);
+
+const iconGlyphClass = computed(() =>
+  [
+    iconSizeClass.value,
+    props.iconFill ? "material-symbols-fill" : "",
+  ]
+    .filter(Boolean)
+    .join(" "),
+);
+
 const rootClass = computed(() =>
   [
     "inline-flex cursor-pointer items-center justify-center font-medium transition duration-150 select-none active:scale-[0.98]",
@@ -227,7 +247,8 @@ const showAppend = computed(
       <span
         v-if="loading"
         class="material-symbols-outlined animate-spin"
-        :class="iconSizeClass"
+        :class="iconGlyphClass"
+        :style="iconFillStyle"
         aria-hidden="true"
       >
         progress_activity
@@ -236,7 +257,8 @@ const showAppend = computed(
         <span
           v-if="icon"
           class="material-symbols-outlined"
-          :class="iconSizeClass"
+          :class="iconGlyphClass"
+          :style="iconFillStyle"
           aria-hidden="true"
         >
           {{ icon }}
@@ -248,7 +270,8 @@ const showAppend = computed(
       <span
         v-if="loading"
         class="material-symbols-outlined animate-spin"
-        :class="iconSizeClass"
+        :class="iconGlyphClass"
+        :style="iconFillStyle"
         aria-hidden="true"
       >
         progress_activity
@@ -262,7 +285,8 @@ const showAppend = computed(
           <span
             v-if="prependIcon"
             class="material-symbols-outlined"
-            :class="iconSizeClass"
+            :class="iconGlyphClass"
+            :style="iconFillStyle"
           >
             {{ prependIcon }}
           </span>
@@ -274,9 +298,12 @@ const showAppend = computed(
         class="inline-flex shrink-0"
         aria-hidden="true"
       >
-        <span class="material-symbols-outlined" :class="iconSizeClass">{{
-          icon
-        }}</span>
+        <span
+          class="material-symbols-outlined"
+          :class="iconGlyphClass"
+          :style="iconFillStyle"
+          >{{ icon }}</span
+        >
       </span>
 
       <span v-if="$slots.default" class="inline-flex min-w-0 items-center">
@@ -292,7 +319,8 @@ const showAppend = computed(
           <span
             v-if="appendIcon"
             class="material-symbols-outlined"
-            :class="iconSizeClass"
+            :class="iconGlyphClass"
+            :style="iconFillStyle"
           >
             {{ appendIcon }}
           </span>

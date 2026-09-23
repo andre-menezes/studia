@@ -11,13 +11,24 @@ const ORIGIN = process.env.MOCK_CORS_ORIGIN ?? 'http://localhost:5173'
 
 type StudyStatus = 'CREATED' | 'STARTED' | 'PAUSED' | 'COMPLETED' | 'ARCHIVED'
 
+type WeekDay = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN'
+
+type StudyRoutine = {
+  frequency: string
+  daysOfWeek?: WeekDay[]
+  time?: { hour: number; minute: number }
+  pomodoro?: { enabled: boolean; restMinutes: number }
+  notes?: string
+}
+
 type Study = {
   id: string
   title: string
   objective: string
-  routine: { frequency: string; notes?: string }
+  routine: StudyRoutine
   status: StudyStatus
   createdAt: string
+  totalStudySeconds: number
 }
 
 const ACCESS_TTL_MS = 15 * 60 * 1000
@@ -47,6 +58,48 @@ const entitlements = {
 let studyCreationsUsed = 0
 const studies: Study[] = []
 const sessions = new Map<string, Session>()
+
+function normalizeRoutine(input: {
+  frequency?: string
+  daysOfWeek?: WeekDay[]
+  time?: { hour?: number; minute?: number }
+  pomodoro?: { enabled?: boolean; restMinutes?: number }
+  notes?: string
+} | undefined): StudyRoutine | null {
+  if (!input?.frequency?.trim()) return null
+  const routine: StudyRoutine = {
+    frequency: input.frequency.trim(),
+    notes: input.notes?.trim() || undefined,
+  }
+  if (Array.isArray(input.daysOfWeek) && input.daysOfWeek.length > 0) {
+    routine.daysOfWeek = input.daysOfWeek
+  }
+  if (input.time != null) {
+    const hour = Number(input.time.hour)
+    const minute = Number(input.time.minute)
+    if (Number.isFinite(hour) && Number.isFinite(minute)) {
+      routine.time = {
+        hour: ((Math.trunc(hour) % 24) + 24) % 24,
+        minute: ((Math.trunc(minute) % 60) + 60) % 60,
+      }
+    }
+  }
+  if (input.pomodoro?.enabled && routine.time) {
+    const hasDuration =
+      (routine.time.hour ?? 0) > 0 || (routine.time.minute ?? 0) > 0
+    if (hasDuration) {
+      const rest = Number(input.pomodoro.restMinutes ?? 5)
+      routine.pomodoro = {
+        enabled: true,
+        restMinutes: Math.min(
+          60,
+          Math.max(1, Number.isFinite(rest) ? Math.trunc(rest) : 5),
+        ),
+      }
+    }
+  }
+  return routine
+}
 
 function json(data: unknown, init: ResponseInit = {}) {
   const headers = new Headers(init.headers)
@@ -268,10 +321,17 @@ const server = Bun.serve({
       const body = await readJson<{
         title?: string
         objective?: string
-        routine?: { frequency?: string; notes?: string }
+        routine?: {
+          frequency?: string
+          daysOfWeek?: WeekDay[]
+          time?: { hour?: number; minute?: number }
+          pomodoro?: { enabled?: boolean; restMinutes?: number }
+          notes?: string
+        }
         status?: StudyStatus
       }>(req)
-      if (!body?.title?.trim() || !body.objective?.trim() || !body.routine?.frequency?.trim()) {
+      const routine = normalizeRoutine(body?.routine)
+      if (!body?.title?.trim() || !body.objective?.trim() || !routine) {
         return withCors(req, problem(422, 'VALIDATION_FAILED', 'Validation failed'))
       }
       if (usage().studyCreationsThisPeriod.remaining <= 0) {
@@ -286,12 +346,10 @@ const server = Bun.serve({
         id: randomUUID(),
         title: body.title.trim(),
         objective: body.objective.trim(),
-        routine: {
-          frequency: body.routine.frequency.trim(),
-          notes: body.routine.notes?.trim() || undefined,
-        },
+        routine,
         status: nextStatus,
         createdAt: new Date().toISOString(),
+        totalStudySeconds: 0,
       }
       studies.unshift(study)
       studyCreationsUsed += 1
@@ -318,15 +376,30 @@ const server = Bun.serve({
       const body = await readJson<{
         title?: string
         objective?: string
-        routine?: { frequency?: string; notes?: string }
+        routine?: {
+          frequency?: string
+          daysOfWeek?: WeekDay[]
+          time?: { hour?: number; minute?: number }
+          pomodoro?: { enabled?: boolean; restMinutes?: number }
+          notes?: string
+        }
         status?: StudyStatus
+        totalStudySeconds?: number
       }>(req)
 
       const hasTitle = body?.title !== undefined
       const hasObjective = body?.objective !== undefined
       const hasRoutine = body?.routine !== undefined
       const hasStatus = body?.status !== undefined
-      if (!hasTitle && !hasObjective && !hasRoutine && !hasStatus) {
+      const hasTotalStudy =
+        body?.totalStudySeconds !== undefined && body.totalStudySeconds !== null
+      if (
+        !hasTitle &&
+        !hasObjective &&
+        !hasRoutine &&
+        !hasStatus &&
+        !hasTotalStudy
+      ) {
         return withCors(req, problem(422, 'VALIDATION_FAILED', 'Validation failed'))
       }
 
@@ -343,13 +416,11 @@ const server = Bun.serve({
         study.objective = body!.objective.trim()
       }
       if (hasRoutine) {
-        if (!body!.routine?.frequency?.trim()) {
+        const routine = normalizeRoutine(body!.routine)
+        if (!routine) {
           return withCors(req, problem(422, 'VALIDATION_FAILED', 'Validation failed'))
         }
-        study.routine = {
-          frequency: body!.routine.frequency.trim(),
-          notes: body!.routine.notes?.trim() || undefined,
-        }
+        study.routine = routine
       }
       if (hasStatus) {
         const nextStatus = body!.status!
@@ -364,6 +435,13 @@ const server = Bun.serve({
           }
         }
         study.status = nextStatus
+      }
+      if (hasTotalStudy) {
+        const value = Number(body!.totalStudySeconds)
+        if (!Number.isFinite(value) || value < 0) {
+          return withCors(req, problem(422, 'VALIDATION_FAILED', 'Validation failed'))
+        }
+        study.totalStudySeconds = Math.trunc(value)
       }
 
       return withCors(req, json(study))

@@ -9,13 +9,20 @@ Evoluir a home de Estudos para um **dashboard orientado à ação** (“o que es
 
 ## Escopo
 
-- Home autenticada (`studies-home`): board por status (colunas com scroll interno), empty state, CTA criar, filtro combo (status + busca por nome), feedback de cota/limite.
+- Home autenticada (`studies-home`): board por status (colunas com scroll interno), empty state de boas-vindas (sem board vazio), CTA criar na coluna `CREATED`, filtro combo (status + busca por nome), feedback de cota/limite.
 - Rota de **detalhe** do Study (`GET /studies/{studyId}`).
 - **Edição localizada** de título, objetivo, rotina e status (`PATCH /studies/{studyId}` alinhado a `docs/api/`).
 - Navegação a partir do sucesso do wizard (“Ver Estudo”) para o detalhe ou home com destaque.
 - UX e entitlements via `can` / `limits` (ADR-0004).
 - Status de domínio: `CREATED` (default ao cadastrar) | `STARTED` | `PAUSED` | `COMPLETED` | `ARCHIVED`.
 - Botão **Iniciar estudo** (`CREATED` → `STARTED`).
+- Drag-and-drop no board (Kanban) com transições permitidas:
+  - `CREATED` → `STARTED` | `ARCHIVED`
+  - `STARTED` → `PAUSED` | `COMPLETED` | `ARCHIVED`
+  - `PAUSED` → `STARTED` | `ARCHIVED`
+  - `COMPLETED` / `ARCHIVED` → sem mudança de coluna; `COMPLETED` pode reordenar na própria coluna; cards `ARCHIVED` não são arrastáveis (nem reordenam).
+  - Drop em `ARCHIVED` (vindo de outro status) exige confirmação (ação irreversível na UX).
+  - Reordenação por drag dentro da mesma coluna (exceto `ARCHIVED`; posição persistida na sessão do board).
 
 ## Fora do escopo
 
@@ -30,11 +37,11 @@ Evoluir a home de Estudos para um **dashboard orientado à ação** (“o que es
 
 1. Usuário autenticado vê a home com Studies existentes (ou empty state + CTA criar).
 2. Cada item da lista é acionável → abre o **detalhe** do Study.
-3. No detalhe: identidade, objetivo, rotina, status; ações primárias contextuais (editar campo, mudar status, voltar à home).
+3. No detalhe: identidade, objetivo, rotina, status; ações primárias contextuais (editar campo, mudar status, voltar à home); timer de sessão quando `CREATED`/`STARTED`.
 4. **Editar** abre fluxo localizado (inline / dialog / painel) só para o campo ou grupo escolhido — **não** o wizard de 4 etapas.
 5. Ao salvar edição: um request de atualização; sucesso atualiza a UI; falha via `errors.<CODE>` (i18n).
 6. Mudança de status para `STARTED` (iniciar) respeita `limits.canActivateStudy` quando aplicável; falha `STUDY_ACTIVE_LIMIT_REACHED`.
-7. Deep-link: `?created={id}` destaca o Study na home e exibe `AppAlert` de sucesso (dismissível).
+7. Deep-link: `?created={id}` destaca o Study na home e exibe `AppAlert` flutuante de sucesso (topo central, auto-dismiss 5s com barra de progresso, ou fechar no X).
 
 ```text
 Home (lista / empty)
@@ -56,11 +63,17 @@ Home (lista / empty)
 ## UX
 
 - Home: board por status; criar; iniciar (`CREATED`); abrir Study; filtros status + nome.
+- Empty (sem Studies): canvas de boas-vindas com copy convidativa, benefícios curtos e prévia visual do board — CTA criar (ou feedback de limite); não renderizar as 5 colunas vazias.
 - Sem scroll na página: scroll só nas colunas (mobile: scroll horizontal entre colunas).
 - Detalhe: leitura clara; editar revelado no contexto (não esconder tudo atrás de um único “Editar tudo”).
+- Timer de sessão no detalhe (countdown se Tempo > 0, cronômetro se 00:00): iniciar / pausar / retomar / reiniciar; em pausa, descanso configurável (UI local). Visível só em `CREATED` | `STARTED`; oculto em `ARCHIVED` (e demais status finais/pausados).
+- Iniciar o timer com Study ainda em `CREATED` também ativa o Study (`CREATED` → `STARTED`), mesmo fluxo de **Iniciar estudo** (incl. `limits.canActivateStudy` / `STUDY_ACTIVE_LIMIT_REACHED`); só então o countdown/cronômetro começa.
+- **Pomodoro** (opcional na rotina, só com Tempo > 00:00): ao concluir o bloco de estudo, inicia automaticamente o descanso configurado (padrão 5 min) com aviso visual e sonoro; ao fim do descanso, novo aviso e estado pronto para o próximo bloco.
+- Ao iniciar o timer fora dos `daysOfWeek` agendados: confirmação (“hoje não é dia de estudo / iniciar mesmo assim?”).
+- Acúmulo de `totalStudySeconds` (só tempo de estudo, sem descanso) via PATCH — métrica para ciclo futuro.
 - Tom assistente (organizar/incentivar), não punitivo.
 - Layout: `docs/architecture/layouts.md` (AppTopBar + canvas, sem sidebar obrigatória).
-- Loading/empty/error com `AppSpinner` / `AppEmptyState` / `AppAlert`.
+- Loading/empty/error com `AppSpinner` / empty dedicada / `AppAlert`.
 
 ## Entitlements / limites
 

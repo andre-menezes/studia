@@ -16,6 +16,8 @@ import StudiesAppBar from "../components/StudiesAppBar.vue";
 import StudyEditFieldDialog, {
   type StudyEditField,
 } from "../components/StudyEditFieldDialog.vue";
+import StudySessionTimer from "../components/StudySessionTimer.vue";
+import { canShowSessionTimer } from "../domain/studyRoutine";
 import { useStudyDetailStore } from "../stores/studyDetailStore";
 import { useStudyListStore } from "../stores/studyListStore";
 
@@ -54,7 +56,14 @@ const canActivate = computed(() => {
   return limits.canActivateStudy(list.startedCount);
 });
 
+const showSessionTimer = computed(
+  () => study.value != null && canShowSessionTimer(study.value.status),
+);
+
 const starting = ref(false);
+const timerSessionActive = ref(false);
+
+const editsLocked = computed(() => timerSessionActive.value);
 
 const loadErrorMessage = computed(() =>
   loadError.value
@@ -96,6 +105,7 @@ onUnmounted(() => {
 });
 
 function openEdit(field: StudyEditField) {
+  if (editsLocked.value) return;
   editField.value = field;
   editError.value = null;
   editOpen.value = true;
@@ -116,17 +126,43 @@ async function onSave(payload: UpdateStudyInput) {
   }
 }
 
-async function onStart() {
-  if (!study.value || starting.value || !canActivate.value) return;
+async function onCommitStudySeconds(deltaSeconds: number) {
+  if (!study.value || deltaSeconds <= 0) return;
+  const nextTotal = (study.value.totalStudySeconds ?? 0) + deltaSeconds;
+  try {
+    await detail.update(study.value.id, { totalStudySeconds: nextTotal });
+  } catch {
+    /* métrica best-effort; não bloquear o timer */
+  }
+}
+
+/**
+ * Ensures Study is STARTED before the session timer begins.
+ * Reused by "Iniciar estudo" and by StudySessionTimer via `ensureStarted`.
+ */
+async function ensureStarted(): Promise<boolean> {
+  if (!study.value) return false;
+  if (study.value.status !== "CREATED") return true;
+  if (!canActivate.value) {
+    editError.value = "STUDY_ACTIVE_LIMIT_REACHED";
+    return false;
+  }
+  if (starting.value) return false;
   starting.value = true;
   editError.value = null;
   try {
     await detail.update(study.value.id, { status: "STARTED" });
+    return true;
   } catch (err) {
     editError.value = err instanceof ApiError ? err.code : "INTERNAL_ERROR";
+    return false;
   } finally {
     starting.value = false;
   }
+}
+
+async function onStart() {
+  await ensureStarted();
 }
 
 async function goHome() {
@@ -156,7 +192,7 @@ function statusLabel(status: StudyStatus) {
       aria-hidden="true"
     >
       <div
-        class="absolute -top-24 -right-16 size-72 rounded-full bg-accent/10 blur-3xl"
+        class="absolute -top-24 -right-16 size-72 rounded-full bg-primary/10 blur-3xl"
       />
       <div
         class="absolute top-1/3 -left-20 size-64 rounded-full bg-secondary/10 blur-3xl"
@@ -203,11 +239,16 @@ function statusLabel(status: StudyStatus) {
           <div class="min-w-0">
             <div class="flex flex-wrap items-center gap-3">
               <h1
-                class="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
+                class="text-2xl leading-none font-semibold tracking-tight text-foreground sm:text-3xl"
               >
                 {{ study.title }}
               </h1>
-              <AppBadge :tone="statusTone" variant="outlined" size="sm">
+              <AppBadge
+                :tone="statusTone"
+                variant="outlined"
+                size="sm"
+                class="self-center"
+              >
                 {{ statusLabel(study.status) }}
               </AppBadge>
             </div>
@@ -218,9 +259,11 @@ function statusLabel(status: StudyStatus) {
           <div class="flex w-fit shrink-0 flex-col gap-2 sm:items-end">
             <AppButton
               v-if="study.status === 'CREATED'"
+              variant="tonal"
               color="primary"
               size="sm"
               prepend-icon="play_arrow"
+              icon-fill
               :loading="starting"
               :disabled="starting || !canActivate"
               @click="onStart"
@@ -232,6 +275,7 @@ function statusLabel(status: StudyStatus) {
               color="muted"
               size="sm"
               prepend-icon="tune"
+              :disabled="editsLocked"
               @click="openEdit('status')"
             >
               {{ t("studies.detail.changeStatus") }}
@@ -242,6 +286,17 @@ function statusLabel(status: StudyStatus) {
         <AppAlert v-if="editErrorMessage" type="error">
           {{ editErrorMessage }}
         </AppAlert>
+
+        <StudySessionTimer
+          v-if="showSessionTimer"
+          :preset="study.routine.time"
+          :days-of-week="study.routine.daysOfWeek"
+          :pomodoro="study.routine.pomodoro"
+          :ensure-started="ensureStarted"
+          @edit-duration="openEdit('routine')"
+          @commit-study-seconds="onCommitStudySeconds"
+          @session-active="timerSessionActive = $event"
+        />
 
         <section class="flex flex-col gap-4">
           <article
@@ -255,9 +310,10 @@ function statusLabel(status: StudyStatus) {
             </div>
             <AppButton
               variant="text"
-              color="accent"
+              color="primary"
               size="sm"
               prepend-icon="edit"
+              :disabled="editsLocked"
               @click="openEdit('title')"
             >
               {{ t("studies.detail.edit") }}
@@ -275,9 +331,10 @@ function statusLabel(status: StudyStatus) {
             </div>
             <AppButton
               variant="text"
-              color="accent"
+              color="primary"
               size="sm"
               prepend-icon="edit"
+              :disabled="editsLocked"
               @click="openEdit('objective')"
             >
               {{ t("studies.detail.edit") }}
@@ -303,9 +360,10 @@ function statusLabel(status: StudyStatus) {
             </div>
             <AppButton
               variant="text"
-              color="accent"
+              color="primary"
               size="sm"
               prepend-icon="edit"
+              :disabled="editsLocked"
               @click="openEdit('routine')"
             >
               {{ t("studies.detail.edit") }}
