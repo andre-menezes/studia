@@ -36,3 +36,4 @@ Referências (ADRs / guidelines)
 |---|---|---|
 | [FEATURE-0001](./FEATURE-0001-study-creation-wizard.md) | Study creation wizard | Ready |
 | [FEATURE-0002](./FEATURE-0002-study-home-detail-edit.md) | Study home, detalhe e edição localizada | Accepted |
+| [FEATURE-0003](./FEATURE-0003-myenglish-english-coach.md) | MyEnglish English Coach | Accepted |

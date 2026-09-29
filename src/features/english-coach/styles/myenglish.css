@@ -1,0 +1,53 @@
+/* Scoped MyEnglish theme tokens — applied on feature roots */
+.me-shell {
+  --me-ink: #07111f;
+  --me-ink-elevated: #0f1c31;
+  --me-fg: #eef5ff;
+  --me-muted-fg: #9eb0c9;
+  --me-teal: #3de0c5;
+  --me-gold: #e4bf70;
+  --me-font-display: "Syne", "Avenir Next", sans-serif;
+  --me-font-body: "Sora", "Avenir Next", sans-serif;
+
+  min-height: 100vh;
+  color: var(--me-fg);
+  font-family: var(--me-font-body);
+  background:
+    radial-gradient(1200px 700px at 12% -10%, rgba(61, 224, 197, 0.22), transparent 55%),
+    radial-gradient(900px 600px at 95% 8%, rgba(228, 191, 112, 0.16), transparent 50%),
+    radial-gradient(800px 500px at 70% 100%, rgba(56, 120, 255, 0.12), transparent 45%),
+    linear-gradient(165deg, #050b16 0%, #0a1628 48%, #0d1f36 100%);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.me-shell::before {
+  content: "";
+  position: absolute;
+  inset: -20% 40% auto -10%;
+  height: 55vh;
+  background: radial-gradient(circle, rgba(61, 224, 197, 0.14), transparent 70%);
+  filter: blur(8px);
+  animation: me-drift 14s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.me-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes me-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(8%, 6%, 0) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .me-shell::before {
+    animation: none;
+  }
+}

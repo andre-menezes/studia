@@ -1,0 +1,32 @@
+{
+  "englishCoach": {
+    "brand": "MyEnglish",
+    "tagline": "Interview-ready English for software engineers.",
+    "heroHeadline": "Speak like a senior in the room.",
+    "heroSupport": "Practice behavioral and technical interviews with a native English coach who thinks like a Senior SWE.",
+    "ctaStart": "Start practicing",
+    "ctaBehavioral": "Behavioral interview",
+    "ctaTechnical": "Technical interview",
+    "ctaFreeform": "Free conversation",
+    "modes": {
+      "behavioral": "Behavioral",
+      "technical": "Technical",
+      "freeform": "Freeform"
+    },
+    "practiceTitle": "Practice session",
+    "practiceHint": "Reply in English. Your coach will correct phrasing and teach one useful idiom.",
+    "composerPlaceholder": "Type your answer in English…",
+    "composerSend": "Send",
+    "composerThinking": "Coach is reviewing…",
+    "backToLanding": "Back to MyEnglish",
+    "newSession": "New prompt",
+    "feedbackTitle": "English Improvement Feedback",
+    "feedbackOriginal": "Original",
+    "feedbackCorrection": "Correction",
+    "feedbackNative": "Native/Professional Alternative",
+    "idiomLabel": "Idiom",
+    "emptyComposer": "Write something to practice.",
+    "errorUnavailable": "Coach is temporarily unavailable. Try again.",
+    "visualAlt": "Abstract interview workspace with code and conversation light"
+  }
+}

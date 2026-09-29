@@ -1,0 +1,32 @@
+{
+  "englishCoach": {
+    "brand": "MyEnglish",
+    "tagline": "Inglês pronto para entrevistas para engenheiros de software.",
+    "heroHeadline": "Fale como um sênior na sala.",
+    "heroSupport": "Pratique entrevistas comportamentais e técnicas com um coach nativo que pensa como um Senior SWE.",
+    "ctaStart": "Começar a praticar",
+    "ctaBehavioral": "Entrevista comportamental",
+    "ctaTechnical": "Entrevista técnica",
+    "ctaFreeform": "Conversa livre",
+    "modes": {
+      "behavioral": "Comportamental",
+      "technical": "Técnica",
+      "freeform": "Livre"
+    },
+    "practiceTitle": "Sessão de prática",
+    "practiceHint": "Responda em inglês. O coach corrige o phrasing e ensina um idiom útil.",
+    "composerPlaceholder": "Escreva sua resposta em inglês…",
+    "composerSend": "Enviar",
+    "composerThinking": "Coach está revisando…",
+    "backToLanding": "Voltar ao MyEnglish",
+    "newSession": "Novo prompt",
+    "feedbackTitle": "English Improvement Feedback",
+    "feedbackOriginal": "Original",
+    "feedbackCorrection": "Correction",
+    "feedbackNative": "Native/Professional Alternative",
+    "idiomLabel": "Idiom",
+    "emptyComposer": "Escreva algo para praticar.",
+    "errorUnavailable": "Coach indisponível no momento. Tente de novo.",
+    "visualAlt": "Espaço abstrato de entrevista com código e conversa"
+  }
+}
