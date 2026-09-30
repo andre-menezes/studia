@@ -13,20 +13,25 @@ export type IdiomTip = {
 }
 
 export type CoachReply = {
-  message: string
+  /** Concise spoken coaching reply (TTS + light transcript). */
+  spoken: string
   feedback: GrammarFeedback | null
   idiom: IdiomTip | null
 }
 
-export type ChatRole = 'coach' | 'user'
+export type CoachEngine = 'ollama' | 'mock'
 
-export type ChatMessage = {
-  id: string
-  role: ChatRole
-  text: string
-  feedback?: GrammarFeedback | null
-  idiom?: IdiomTip | null
-  createdAt: string
+export type OllamaHealth =
+  | { status: 'ok'; model: string; models: string[] }
+  | { status: 'unreachable'; detail: string }
+  | { status: 'model_missing'; model: string; models: string[]; pullCommand: string }
+  | { status: 'unknown' }
+
+export type CoachTurnInput = {
+  mode: PracticeMode
+  userText: string
+  turnIndex: number
+  history?: Array<{ role: 'user' | 'coach'; text: string }>
 }
 
 export const PRACTICE_MODES: readonly PracticeMode[] = [
@@ -42,3 +47,5 @@ export function isPracticeMode(value: unknown): value is PracticeMode {
     value === 'freeform'
   )
 }
+
+export const DEFAULT_OLLAMA_MODEL = 'qwen2.5:14b'

@@ -15,5 +15,13 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    proxy: {
+      // Avoid browser CORS when calling local Ollama during `bun run dev`.
+      '/ollama': {
+        target: 'http://127.0.0.1:11434',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ollama/, ''),
+      },
+    },
   },
 })

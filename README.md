@@ -28,6 +28,19 @@ Login seed do mock: `demo@studia.app` / `studia123`
 
 `VITE_API_BASE_URL` deve apontar para o Mock (ex.: `http://localhost:3000/api/v1`).
 
+## MyEnglish (English Coach)
+
+Voice-first interview English practice at `/english` (public). Uses local **Ollama** by default (`qwen2.5:14b`) with mock fallback.
+
+See [`docs/guides/myenglish-ollama.md`](docs/guides/myenglish-ollama.md) for `ollama pull`, CORS, and env vars.
+
+```bash
+ollama serve
+ollama pull qwen2.5:14b
+bun run dev
+# http://localhost:5173/english
+```
+
 ## Design System (Storybook)
 
 Componentes em `src/shared/ui/` documentados no Storybook:

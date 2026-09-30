@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import CoachChatPanel from '../components/CoachChatPanel.vue'
+import CoachVoicePanel from '../components/CoachVoicePanel.vue'
 import { useEnglishCoachCopy } from '../composables/useEnglishCoachCopy'
 import { isPracticeMode, type PracticeMode } from '../domain/coach'
 import '../styles/myenglish.css'
@@ -43,7 +43,7 @@ const modes: PracticeMode[] = ['behavioral', 'technical', 'freeform']
         </div>
       </header>
 
-      <CoachChatPanel :mode="mode" />
+      <CoachVoicePanel :mode="mode" />
     </main>
   </div>
 </template>

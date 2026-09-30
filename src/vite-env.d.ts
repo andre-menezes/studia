@@ -2,6 +2,9 @@
 
 interface ImportMetaEnv {
   readonly VITE_API_BASE_URL: string
+  readonly VITE_OLLAMA_BASE_URL?: string
+  readonly VITE_OLLAMA_MODEL?: string
+  readonly VITE_OLLAMA_DEMO_MODE?: string
 }
 
 interface ImportMeta {

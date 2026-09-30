@@ -25,6 +25,7 @@ Implementation
 | `features/` | Como cada funcionalidade deve funcionar (FEATURE/BUG specs) |
 | `api/` | Contratos OpenAPI, códigos de erro |
 | `conventions/` | Convenções transversais (docs, git/branches/commits) |
+| `guides/` | Guias operacionais (ex.: MyEnglish + Ollama) |
 
 ## Como usar esta documentação
 
