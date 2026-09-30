@@ -2,10 +2,16 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import type { PracticeMode } from '../domain/coach'
 import { useEnglishCoachCopy } from '../composables/useEnglishCoachCopy'
-import { useSpeechCoach } from '../composables/useSpeechCoach'
+import {
+  isBlockingSpeechError,
+  useSpeechCoach,
+} from '../composables/useSpeechCoach'
 import { useCoachStore } from '../stores/coachStore'
 import { pullCommandFor } from '../services/ollamaConfig'
 import GrammarFeedbackPanel from './GrammarFeedbackPanel.vue'
+
+/** Presses shorter than this are treated as tap-to-toggle, not hold-to-talk. */
+const HOLD_THRESHOLD_MS = 280
 
 const props = defineProps<{
   mode: PracticeMode
@@ -22,6 +28,7 @@ const {
   support,
   startListening,
   stopListening,
+  setHoldMode,
   speak,
   stopSpeaking,
 } = useSpeechCoach()
@@ -31,6 +38,11 @@ const draft = ref('')
 const modelDraft = ref(coach.modelName)
 const holdActive = ref(false)
 const suppressClick = ref(false)
+const pressStartedAt = ref(0)
+const wasListeningOnDown = ref(false)
+const micBusy = ref(false)
+const pressGen = ref(0)
+const releaseWhileStarting = { kind: 'none' as 'none' | 'tap' | 'hold' }
 
 const statusLabel = computed(() => {
   if (coach.isThinking) return t('englishCoach.statusThinking')
@@ -87,8 +99,15 @@ const healthBanner = computed(() => {
 const speechBlockedReason = computed(() => {
   if (!support.value.recognition) return t('englishCoach.speechUnsupported')
   if (!support.value.secureContext) return t('englishCoach.speechInsecure')
-  if (speechError.value === 'not-allowed') return t('englishCoach.speechDenied')
-  if (speechError.value) return t('englishCoach.speechGenericError')
+  if (speechError.value === 'not-allowed' || speechError.value === 'service-not-allowed') {
+    return t('englishCoach.speechDenied')
+  }
+  if (speechError.value === 'no-microphone') {
+    return t('englishCoach.speechGenericError')
+  }
+  if (isBlockingSpeechError(speechError.value)) {
+    return t('englishCoach.speechGenericError')
+  }
   return null
 })
 
@@ -121,42 +140,103 @@ async function handleUtterance(text: string) {
   }
 }
 
+function armClickSuppress() {
+  suppressClick.value = true
+  window.setTimeout(() => {
+    suppressClick.value = false
+  }, 280)
+}
+
+async function finishUtteranceFromMic() {
+  const text = stopListening()
+  if (text) await handleUtterance(text)
+}
+
 async function onMicPointerDown(event: PointerEvent) {
-  if (coach.isThinking || speaking.value) return
+  if (coach.isThinking || micBusy.value) return
   if (speechBlockedReason.value) {
     textFallbackOpen.value = true
     return
   }
+
+  // Barge-in: let the learner interrupt coach TTS immediately.
+  if (speaking.value) {
+    stopSpeaking()
+  }
+
+  const gen = pressGen.value + 1
+  pressGen.value = gen
+  wasListeningOnDown.value = listening.value
+  pressStartedAt.value = Date.now()
   holdActive.value = true
+  releaseWhileStarting.kind = 'none'
   suppressClick.value = false
   ;(event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId)
-  startListening({ hold: true })
+
+  if (listening.value) {
+    // Already in tap-to-talk; release will stop + submit.
+    return
+  }
+
+  micBusy.value = true
+  try {
+    await startListening({ hold: true })
+    if (pressGen.value !== gen) return
+
+    // Re-read after await — pointerup may have flipped this while permission resolved.
+    const release = releaseWhileStarting.kind as 'none' | 'tap' | 'hold'
+    if (release === 'hold') {
+      await finishUtteranceFromMic()
+    } else if (release === 'tap') {
+      // Short press while permission/start was in flight: stay in toggle-on mode.
+      setHoldMode(false)
+    }
+  } finally {
+    if (pressGen.value === gen) micBusy.value = false
+  }
 }
 
 async function onMicPointerUp() {
+  if (!holdActive.value && releaseWhileStarting.kind === 'none') return
+
+  const heldMs = Date.now() - pressStartedAt.value
+  const isHold = heldMs >= HOLD_THRESHOLD_MS
+  armClickSuppress()
+
+  // Start still pending (permission prompt / recognition boot).
+  if (micBusy.value && !wasListeningOnDown.value) {
+    holdActive.value = false
+    releaseWhileStarting.kind = isHold ? 'hold' : 'tap'
+    return
+  }
+
   if (!holdActive.value) return
   holdActive.value = false
-  suppressClick.value = true
-  const text = stopListening()
-  if (text) await handleUtterance(text)
-  window.setTimeout(() => {
-    suppressClick.value = false
-  }, 250)
+
+  if (wasListeningOnDown.value || isHold) {
+    await finishUtteranceFromMic()
+    return
+  }
+
+  // Short tap: keep recognition running in toggle mode.
+  setHoldMode(false)
 }
 
 function onMicClick() {
-  if (suppressClick.value || holdActive.value) return
-  if (listening.value) {
-    const text = stopListening()
-    if (text) void handleUtterance(text)
-    return
-  }
-  if (coach.isThinking || speaking.value) return
+  // Pointer handlers own the interaction; click is a no-op backup for
+  // assistive tech that synthesized a click without pointer events.
+  if (suppressClick.value || holdActive.value || micBusy.value) return
+  if (coach.isThinking) return
   if (speechBlockedReason.value) {
     textFallbackOpen.value = true
     return
   }
-  startListening({ hold: false })
+  if (speaking.value) stopSpeaking()
+  if (listening.value) {
+    void finishUtteranceFromMic()
+    return
+  }
+  void startListening({ hold: false })
 }
 
 async function onTextSubmit() {
