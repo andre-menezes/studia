@@ -1,5 +1,12 @@
 import { randomUUID } from 'node:crypto'
-import { ACCESS_TTL_MS, FREE_ENTITLEMENTS, SEED_USER } from './config'
+import {
+  ACCESS_TTL_MS,
+  CHECKOUT_TTL_MS,
+  FREE_ENTITLEMENTS,
+  PREMIUM_ENTITLEMENTS,
+  PREMIUM_PERIOD_MS,
+  SEED_USER,
+} from './config'
 import { monthlyPeriod } from './period'
 
 export type StudyStatus = 'CREATED' | 'STARTED' | 'PAUSED' | 'COMPLETED' | 'ARCHIVED'
@@ -33,6 +40,19 @@ export type User = {
   timeZone: string
 }
 
+export type BillingMethod = 'CARD' | 'PIX'
+
+/**
+ * Mock of the gateway state the real backend keeps from webhooks (ADR-0012).
+ * PENDING is never stored: it is derived from an open checkout.
+ */
+export type Subscription = {
+  status: 'NONE' | 'ACTIVE' | 'CANCELED' | 'EXPIRED'
+  method?: BillingMethod
+  currentPeriodEnd?: string
+  cancelAtPeriodEnd: boolean
+}
+
 type Session = {
   refreshToken: string
   accessToken: string
@@ -52,6 +72,9 @@ export const db = {
   sessions: new Map<string, Session>(),
   resetTokens: new Map<string, ResetToken>(),
   studies: [] as Study[],
+  subscriptions: new Map<string, Subscription>(),
+  /** Pending hosted checkouts by id (stands in for Mercado Pago preferences). */
+  checkouts: new Map<string, { userId: string; method: BillingMethod; createdAt: number }>(),
   /** Key: `${userId}:${YYYY-MM}` in the user's time zone (ADR-0009). */
   studyCreationsUsed: new Map<string, number>(),
 }
@@ -80,8 +103,45 @@ export function recordStudyCreation(user: User) {
   db.studyCreationsUsed.set(creationsKey(user), creationsUsed(user) + 1)
 }
 
+/**
+ * Current subscription. An active card renews by itself (the period rolls forward);
+ * a canceled card or a Pix period that ended turns into EXPIRED.
+ */
+export function subscriptionOf(userId: string): Subscription {
+  const sub = db.subscriptions.get(userId) ?? { status: 'NONE', cancelAtPeriodEnd: false }
+  const ended = sub.currentPeriodEnd !== undefined && Date.parse(sub.currentPeriodEnd) <= Date.now()
+  if (ended && sub.status === 'ACTIVE' && sub.method === 'CARD') {
+    let end = Date.parse(sub.currentPeriodEnd!)
+    while (end <= Date.now()) end += PREMIUM_PERIOD_MS
+    sub.currentPeriodEnd = new Date(end).toISOString()
+    db.subscriptions.set(userId, sub)
+  } else if (ended && (sub.status === 'ACTIVE' || sub.status === 'CANCELED')) {
+    sub.status = 'EXPIRED'
+    sub.cancelAtPeriodEnd = false
+    db.subscriptions.set(userId, sub)
+  }
+  return sub
+}
+
+export function hasOpenCheckout(userId: string) {
+  for (const [id, checkout] of db.checkouts) {
+    if (Date.now() - checkout.createdAt > CHECKOUT_TTL_MS) db.checkouts.delete(id)
+    else if (checkout.userId === userId) return true
+  }
+  return false
+}
+
+export function planOf(user: User) {
+  const { status } = subscriptionOf(user.id)
+  return status === 'ACTIVE' || status === 'CANCELED' ? ('PREMIUM' as const) : ('FREE' as const)
+}
+
+export function entitlementsOf(user: User) {
+  return planOf(user) === 'PREMIUM' ? PREMIUM_ENTITLEMENTS : FREE_ENTITLEMENTS
+}
+
 export function usage(user: User) {
-  const limit = FREE_ENTITLEMENTS.limits.maxStudyCreationsPerMonth
+  const limit = entitlementsOf(user).limits.maxStudyCreationsPerMonth
   const used = creationsUsed(user)
   const { periodStart, periodEnd } = monthlyPeriod(user.timeZone)
   return {
@@ -98,8 +158,8 @@ export function usage(user: User) {
 export function mePayload(user: User) {
   return {
     user: publicUser(user),
-    plan: 'FREE' as const,
-    entitlements: FREE_ENTITLEMENTS,
+    plan: planOf(user),
+    entitlements: entitlementsOf(user),
     usage: usage(user),
   }
 }

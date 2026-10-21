@@ -19,6 +19,8 @@
     "STUDY_ACTIVE_LIMIT_REACHED": "Você atingiu o limite de Estudos iniciados.",
     "AUTH_EMAIL_TAKEN": "Já existe uma conta com esse e-mail.",
     "AUTH_PASSWORD_TOO_WEAK": "A senha não atende aos requisitos mínimos.",
-    "AUTH_RESET_TOKEN_INVALID": "Este link de redefinição é inválido ou expirou."
+    "AUTH_RESET_TOKEN_INVALID": "Este link de redefinição é inválido ou expirou.",
+    "BILLING_ALREADY_PREMIUM": "Você já é Premium.",
+    "BILLING_NOTHING_TO_CANCEL": "Não há assinatura no cartão para cancelar."
   }
 }

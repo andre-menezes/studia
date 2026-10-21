@@ -26,6 +26,8 @@ Mapear `code` estável da API (RFC 9457 + extensão) para chaves i18n no fronten
 | `STUDY_NOT_FOUND` | 404 | `errors.STUDY_NOT_FOUND` | Study inexistente |
 | `STUDY_CREATE_LIMIT_REACHED` | 403 | `errors.STUDY_CREATE_LIMIT_REACHED` | Cota mensal de criações |
 | `STUDY_ACTIVE_LIMIT_REACHED` | 403 | `errors.STUDY_ACTIVE_LIMIT_REACHED` | Limite de Studies STARTED (em andamento) |
+| `BILLING_ALREADY_PREMIUM` | 409 | `errors.BILLING_ALREADY_PREMIUM` | Checkout já sendo Premium, exceto renovação Pix sobre período Pix ativo (FEATURE-0006) |
+| `BILLING_NOTHING_TO_CANCEL` | 409 | `errors.BILLING_NOTHING_TO_CANCEL` | Cancelar sem assinatura de cartão ativa |
 | `INTERNAL_ERROR` | 500 | `errors.INTERNAL_ERROR` | Falha inesperada |
 
 ## Exemplos

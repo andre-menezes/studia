@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto'
-import { FREE_ENTITLEMENTS } from '../config'
 import {
   authenticate,
   creationsUsed,
   db,
+  entitlementsOf,
   recordStudyCreation,
   type Study,
   type StudyRoutine,
@@ -90,13 +90,13 @@ export const studyRoutes: Handler = async (req, path) => {
     if (!body?.title?.trim() || !body.objective?.trim() || !routine) {
       return validationFailed()
     }
-    if (creationsUsed(user) >= FREE_ENTITLEMENTS.limits.maxStudyCreationsPerMonth) {
+    if (creationsUsed(user) >= entitlementsOf(user).limits.maxStudyCreationsPerMonth) {
       return problem(403, 'STUDY_CREATE_LIMIT_REACHED', 'Create limit reached')
     }
     const nextStatus = body.status ?? 'CREATED'
     if (
       nextStatus === 'STARTED' &&
-      startedCount(user.id) >= FREE_ENTITLEMENTS.limits.maxActiveStudies
+      startedCount(user.id) >= entitlementsOf(user).limits.maxActiveStudies
     ) {
       return activeLimitReached()
     }
@@ -157,7 +157,7 @@ export const studyRoutes: Handler = async (req, path) => {
     if (hasStatus) {
       const nextStatus = body!.status!
       const starting = nextStatus === 'STARTED' && study.status !== 'STARTED'
-      if (starting && startedCount(user.id) >= FREE_ENTITLEMENTS.limits.maxActiveStudies) {
+      if (starting && startedCount(user.id) >= entitlementsOf(user).limits.maxActiveStudies) {
         return activeLimitReached()
       }
       study.status = nextStatus

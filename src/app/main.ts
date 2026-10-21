@@ -4,11 +4,15 @@ import App from './App.vue'
 import { initSession } from './bootstrap/initSession'
 import { i18n } from '@/shared/i18n'
 import { authMessages } from '@/features/auth'
+import { billingMessages } from '@/features/billing'
 import { studiesMessages } from '@/features/studies'
 import '@/shared/styles/main.css'
 import { router } from './router'
 
 for (const [locale, messages] of Object.entries(authMessages)) {
+  i18n.global.mergeLocaleMessage(locale, messages as Record<string, unknown>)
+}
+for (const [locale, messages] of Object.entries(billingMessages)) {
   i18n.global.mergeLocaleMessage(locale, messages as Record<string, unknown>)
 }
 for (const [locale, messages] of Object.entries(studiesMessages)) {

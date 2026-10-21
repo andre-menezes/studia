@@ -19,6 +19,8 @@
     "STUDY_ACTIVE_LIMIT_REACHED": "You reached the started studies limit.",
     "AUTH_EMAIL_TAKEN": "An account with this email already exists.",
     "AUTH_PASSWORD_TOO_WEAK": "The password does not meet the minimum requirements.",
-    "AUTH_RESET_TOKEN_INVALID": "This reset link is invalid or has expired."
+    "AUTH_RESET_TOKEN_INVALID": "This reset link is invalid or has expired.",
+    "BILLING_ALREADY_PREMIUM": "You are already Premium.",
+    "BILLING_NOTHING_TO_CANCEL": "There is no card subscription to cancel."
   }
 }

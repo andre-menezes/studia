@@ -1,0 +1,62 @@
+{
+  "billing": {
+    "plans": {
+      "title": "Planos",
+      "subtitle": "Escolha como quer estudar no Studia.",
+      "back": "Voltar",
+      "loading": "Carregando sua assinatura",
+      "free": {
+        "name": "Free",
+        "price": "Grátis",
+        "features": [
+          "Limite de Estudos iniciados ao mesmo tempo",
+          "Limite de Estudos criados por mês",
+          "Tarefas, notas e timer de sessão"
+        ]
+      },
+      "premium": {
+        "name": "Premium",
+        "perMonth": "{price}/mês",
+        "features": [
+          "Estudos iniciados sem limite",
+          "Criação de Estudos sem limite",
+          "Estatísticas de estudo (em breve)",
+          "Tarefas, notas e timer de sessão"
+        ]
+      },
+      "current": "Seu plano",
+      "payCard": "Assinar com cartão",
+      "payPix": "Pagar com Pix (30 dias)",
+      "renewPix": "Renovar com Pix (+30 dias)",
+      "cardHint": "Cobrança mensal automática no cartão. Cancele quando quiser.",
+      "pixHint": "Pix libera 30 dias de Premium. Você renova quando quiser.",
+      "secureCheckout": "O pagamento é feito no Mercado Pago. O Studia não recebe os dados do seu cartão.",
+      "retry": "Tentar de novo"
+    },
+    "status": {
+      "active": {
+        "CARD": "Premium ativo no cartão. Próxima cobrança em {date}.",
+        "PIX": "Premium ativo via Pix até {date}."
+      },
+      "canceled": "Assinatura cancelada. O Premium continua até {date}.",
+      "expired": "Seu Premium expirou. Assine de novo para voltar a ter Estudos sem limite.",
+      "pending": "Há um pagamento em processamento. Assim que for aprovado, o Premium é liberado."
+    },
+    "cancel": {
+      "action": "Cancelar assinatura",
+      "confirmTitle": "Cancelar a assinatura?",
+      "confirmDescription": "Você continua Premium até {date}. Depois disso, volta para o plano Free.",
+      "confirm": "Cancelar assinatura",
+      "keep": "Manter Premium"
+    },
+    "return": {
+      "title": "Pagamento",
+      "checking": "Confirmando o pagamento com o Mercado Pago…",
+      "success": "Tudo certo! Você agora é Premium.",
+      "pending": "Seu pagamento ainda está em processamento. Assim que for aprovado, o Premium é liberado automaticamente.",
+      "rejected": "O pagamento não foi aprovado. Nenhum valor foi cobrado.",
+      "goHome": "Ir para meus Estudos",
+      "goPlans": "Ver planos"
+    }
+  }
+}

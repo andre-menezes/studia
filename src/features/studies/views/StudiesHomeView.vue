@@ -2,7 +2,8 @@
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
-import { limits, useAuthStore, useUsage } from "@/features/auth";
+import { can, limits, useAuthStore, useUsage } from "@/features/auth";
+import { BILLING_PLANS_ROUTE } from "@/features/billing";
 import { ApiError } from "@/shared/http";
 import {
   AppAlert,
@@ -75,8 +76,10 @@ const quota = computed(() =>
     auth.user?.timeZone,
   ),
 );
+/** Premium has no study limits: no counter to show (FEATURE-0006). */
+const unlimited = computed(() => can("studies.unlimited"));
 const quotaLabel = computed(() =>
-  quota.value
+  quota.value && !unlimited.value
     ? t("studies.quota.summary", {
         used: quota.value.used,
         limit: quota.value.limit,
@@ -84,6 +87,7 @@ const quotaLabel = computed(() =>
       })
     : null,
 );
+const showPremiumCta = computed(() => !unlimited.value && !canCreate.value);
 const createLimitMessage = computed(() => {
   if (!auth.isAuthenticated || canCreate.value) return null;
   return quota.value?.renewsAt
@@ -308,7 +312,9 @@ async function confirmArchive() {
       :logout-label="loggingOut ? t('common.loading') : t('common.logout')"
       :logging-out="loggingOut"
       max-width-class="max-w-[90rem]"
+      :plans-label="t('studies.home.premium')"
       @logout="onLogout"
+      @plans="router.push({ name: BILLING_PLANS_ROUTE })"
     />
 
     <div
@@ -383,6 +389,16 @@ async function confirmArchive() {
           data-testid="study-quota"
         >
           {{ quotaLabel }}
+          <template v-if="showPremiumCta">
+            ·
+            <RouterLink
+              :to="{ name: BILLING_PLANS_ROUTE }"
+              class="font-medium text-primary underline-offset-2 hover:underline"
+              data-testid="premium-cta"
+            >
+              {{ t("studies.home.premiumCta") }}
+            </RouterLink>
+          </template>
         </p>
 
         <p
@@ -465,6 +481,20 @@ async function confirmArchive() {
         @dismiss="actionError = null"
       >
         {{ actionErrorMessage }}
+        <template
+          v-if="actionError === 'STUDY_ACTIVE_LIMIT_REACHED' && !unlimited"
+          #actions
+        >
+          <AppButton
+            size="sm"
+            variant="tonal"
+            color="error"
+            prepend-icon="workspace_premium"
+            @click="router.push({ name: BILLING_PLANS_ROUTE })"
+          >
+            {{ t("studies.home.premiumCta") }}
+          </AppButton>
+        </template>
       </AppAlert>
       <AppAlert
         v-if="createSuccessMessage"

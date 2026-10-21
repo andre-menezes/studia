@@ -7,6 +7,7 @@
 import { ORIGIN, PORT, SEED_USER } from './config'
 import { json, problem, withCors, type Handler } from './http'
 import { authRoutes } from './routes/auth'
+import { billingRoutes } from './routes/billing'
 import { studyRoutes } from './routes/studies'
 
 const ENDPOINTS = [
@@ -22,9 +23,13 @@ const ENDPOINTS = [
   'POST /studies',
   'GET /studies/:id',
   'PATCH /studies/:id',
+  'GET /billing/subscription',
+  'POST /billing/checkout',
+  'POST /billing/subscription/cancel',
+  'GET|POST /billing/mock-checkout/:id[/approve|/reject] (simulated Mercado Pago)',
 ]
 
-const routes: Handler[] = [authRoutes, studyRoutes]
+const routes: Handler[] = [authRoutes, studyRoutes, billingRoutes]
 
 async function handle(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') return new Response(null, { status: 204 })

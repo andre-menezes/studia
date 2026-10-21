@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
-import { limits, useAuthStore, useUsage } from "@/features/auth";
+import { can, limits, useAuthStore, useUsage } from "@/features/auth";
 import { ApiError } from "@/shared/http";
 import {
   AppAlert,
@@ -80,7 +80,8 @@ const stepperItems = computed<AppStepperItem[]>(() =>
 
 const usageLabel = computed(() => {
   const counter = usage.value?.studyCreationsThisPeriod;
-  if (!counter) return null;
+  // Premium has no creation limit to count (FEATURE-0006).
+  if (!counter || can("studies.unlimited")) return null;
   const params = { used: counter.used, limit: counter.limit };
   const date = formatRenewDate(
     counter.periodEnd,
