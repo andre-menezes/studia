@@ -152,7 +152,12 @@
         "subtitle": "{title} está pronto para começar.",
         "view": "Ver Estudo",
         "createAnother": "Criar outro Estudo"
-      }
+      },
+      "usageWithRenew": "Você usou {used} de {limit} criações disponíveis este mês. Renova em {date}."
+    },
+    "quota": {
+      "summary": "{used} de {limit} criações este mês · renova em {date}",
+      "limitReachedRenews": "Você atingiu o limite mensal de criação de Estudos. Renova em {date}."
     }
   }
 }

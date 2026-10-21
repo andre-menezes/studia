@@ -19,6 +19,7 @@ import {
   type StudyRoutineTime,
   type WeekDay,
 } from "../domain/studyRoutine";
+import { formatRenewDate } from "../lib/quota";
 import { useStudyListStore } from "../stores/studyListStore";
 import StudiesAppBar from "../components/StudiesAppBar.vue";
 import StudyWizardActions from "../components/StudyWizardActions.vue";
@@ -27,7 +28,7 @@ import StudyWizardIdentityStep from "../components/StudyWizardIdentityStep.vue";
 import StudyWizardObjectiveStep from "../components/StudyWizardObjectiveStep.vue";
 import StudyWizardRoutineStep from "../components/StudyWizardRoutineStep.vue";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const router = useRouter();
 const studies = useStudyListStore();
 const auth = useAuthStore();
@@ -80,10 +81,15 @@ const stepperItems = computed<AppStepperItem[]>(() =>
 const usageLabel = computed(() => {
   const counter = usage.value?.studyCreationsThisPeriod;
   if (!counter) return null;
-  return t("studies.wizard.usage", {
-    used: counter.used,
-    limit: counter.limit,
-  });
+  const params = { used: counter.used, limit: counter.limit };
+  const date = formatRenewDate(
+    counter.periodEnd,
+    locale.value,
+    auth.user?.timeZone,
+  );
+  return date
+    ? t("studies.wizard.usageWithRenew", { ...params, date })
+    : t("studies.wizard.usage", params);
 });
 
 const errorMessage = computed(() =>

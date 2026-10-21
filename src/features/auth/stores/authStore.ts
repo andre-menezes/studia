@@ -91,6 +91,17 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  /** Re-read usage from the server (authority) after a counted action. */
+  async function refreshUsage() {
+    try {
+      const me = await authService.me()
+      usage.value = me.usage
+      entitlements.value = me.entitlements
+    } catch {
+      // Keep the last known usage; the server still enforces the limit.
+    }
+  }
+
   function can(capability: string) {
     return entitlements.value?.capabilities.includes(capability) ?? false
   }
@@ -121,6 +132,7 @@ export const useAuthStore = defineStore('auth', () => {
     requestPasswordReset,
     resetPassword,
     logout,
+    refreshUsage,
     can,
     canCreateStudy,
     canActivateStudy,

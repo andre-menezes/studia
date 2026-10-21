@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
-import { limits, useAuthStore } from "@/features/auth";
+import { limits, useAuthStore, useUsage } from "@/features/auth";
 import { ApiError } from "@/shared/http";
 import {
   AppAlert,
@@ -23,13 +23,15 @@ import {
   canDropStudyOnColumn,
   canMoveStudyStatus,
 } from "../domain/studyStatusTransitions";
+import { summarizeQuota } from "../lib/quota";
 import { useStudyListStore } from "../stores/studyListStore";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const studies = useStudyListStore();
 const auth = useAuthStore();
+const usage = useUsage();
 
 const errorCode = ref<string | null>(null);
 const actionError = ref<string | null>(null);
@@ -66,11 +68,28 @@ const canStart = computed(() => limits.canActivateStudy(studies.startedCount));
 const showCreateInColumn = computed(
   () => auth.isAuthenticated && canCreate.value && studies.data.length > 0,
 );
-const createLimitMessage = computed(() =>
-  auth.isAuthenticated && !canCreate.value
-    ? t("errors.STUDY_CREATE_LIMIT_REACHED")
+const quota = computed(() =>
+  summarizeQuota(
+    usage.value?.studyCreationsThisPeriod,
+    locale.value,
+    auth.user?.timeZone,
+  ),
+);
+const quotaLabel = computed(() =>
+  quota.value
+    ? t("studies.quota.summary", {
+        used: quota.value.used,
+        limit: quota.value.limit,
+        date: quota.value.renewsAt,
+      })
     : null,
 );
+const createLimitMessage = computed(() => {
+  if (!auth.isAuthenticated || canCreate.value) return null;
+  return quota.value?.renewsAt
+    ? t("studies.quota.limitReachedRenews", { date: quota.value.renewsAt })
+    : t("errors.STUDY_CREATE_LIMIT_REACHED");
+});
 const isLoading = computed(
   () => studies.status === "loading" || studies.status === "idle",
 );
@@ -358,6 +377,13 @@ async function confirmArchive() {
             {{ t("studies.home.clearFilters") }}
           </AppButton>
         </div>
+        <p
+          v-if="quotaLabel"
+          class="-mt-2 shrink-0 px-1 text-xs text-muted sm:-mt-3"
+          data-testid="study-quota"
+        >
+          {{ quotaLabel }}
+        </p>
 
         <p
           v-if="filtersActive && !hasFilterResults"
