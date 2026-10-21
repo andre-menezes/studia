@@ -152,7 +152,12 @@
         "subtitle": "{title} is ready to start.",
         "view": "View Study",
         "createAnother": "Create another Study"
-      }
+      },
+      "usageWithRenew": "You used {used} of {limit} creations available this month. Renews on {date}."
+    },
+    "quota": {
+      "summary": "{used} of {limit} creations this month · renews on {date}",
+      "limitReachedRenews": "You reached the monthly study creation limit. Renews on {date}."
     }
   }
 }

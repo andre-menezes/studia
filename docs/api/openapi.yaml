@@ -343,6 +343,10 @@ components:
           format: email
         displayName:
           type: string
+        timeZone:
+          type: string
+          description: IANA zone used for the quota period (ADR-0009)
+          example: America/Sao_Paulo
     Plan:
       type: string
       enum: [FREE, PREMIUM]
@@ -369,7 +373,10 @@ components:
       properties:
         studyCreationsThisPeriod:
           type: object
-          required: [used, limit, remaining]
+          required: [used, limit, remaining, periodStart, periodEnd]
+          description: >
+            Free: calendar month in the user's time zone (ADR-0009).
+            The client only displays the period; it never computes it.
           properties:
             used:
               type: integer
@@ -380,6 +387,16 @@ components:
             remaining:
               type: integer
               minimum: 0
+            periodStart:
+              type: string
+              format: date-time
+              description: Instant the current period started (UTC)
+              example: '2026-10-01T03:00:00Z'
+            periodEnd:
+              type: string
+              format: date-time
+              description: Instant the counter renews (exclusive end, UTC)
+              example: '2026-11-01T03:00:00Z'
     StudyStatus:
       type: string
       enum: [CREATED, STARTED, PAUSED, COMPLETED, ARCHIVED]

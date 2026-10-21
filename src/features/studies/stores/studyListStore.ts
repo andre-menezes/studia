@@ -5,6 +5,8 @@ import type {
   Study,
   UpdateStudyInput,
 } from '../domain/study'
+import { useAuthStore } from '@/features/auth'
+import { ApiError } from '@/shared/http'
 import { studyService } from '../services/studyService'
 
 export const useStudyListStore = defineStore('study-list', () => {
@@ -42,8 +44,18 @@ export const useStudyListStore = defineStore('study-list', () => {
   }
 
   async function createStudy(input: CreateStudyInput) {
-    const created = await studyService.create(input)
+    let created: Study
+    try {
+      created = await studyService.create(input)
+    } catch (error) {
+      // Usage shown by the client was stale: resync it with the server.
+      if (error instanceof ApiError && error.code === 'STUDY_CREATE_LIMIT_REACHED') {
+        void useAuthStore().refreshUsage()
+      }
+      throw error
+    }
     data.value = [created, ...data.value]
+    void useAuthStore().refreshUsage()
     return created
   }
 

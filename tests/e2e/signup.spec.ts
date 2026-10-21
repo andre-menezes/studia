@@ -1,9 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { MOCK_API_URL, SEED_USER } from './helpers'
-
-function uniqueEmail(prefix: string) {
-  return `${prefix}-${Date.now()}@test.local`
-}
+import { MOCK_API_URL, SEED_USER, uniqueEmail } from './helpers'
 
 async function fillSignUp(page: import('@playwright/test').Page, email: string) {
   await page.goto('/login')

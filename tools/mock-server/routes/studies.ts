@@ -1,6 +1,15 @@
 import { randomUUID } from 'node:crypto'
 import { FREE_ENTITLEMENTS } from '../config'
-import { authenticate, db, type Study, type StudyRoutine, type StudyStatus, type WeekDay } from '../db'
+import {
+  authenticate,
+  creationsUsed,
+  db,
+  recordStudyCreation,
+  type Study,
+  type StudyRoutine,
+  type StudyStatus,
+  type WeekDay,
+} from '../db'
 import { json, problem, readJson, unauthorized, validationFailed, type Handler } from '../http'
 
 type RoutineInput = {
@@ -81,8 +90,7 @@ export const studyRoutes: Handler = async (req, path) => {
     if (!body?.title?.trim() || !body.objective?.trim() || !routine) {
       return validationFailed()
     }
-    const used = db.studyCreationsUsed.get(user.id) ?? 0
-    if (used >= FREE_ENTITLEMENTS.limits.maxStudyCreationsPerMonth) {
+    if (creationsUsed(user) >= FREE_ENTITLEMENTS.limits.maxStudyCreationsPerMonth) {
       return problem(403, 'STUDY_CREATE_LIMIT_REACHED', 'Create limit reached')
     }
     const nextStatus = body.status ?? 'CREATED'
@@ -103,7 +111,7 @@ export const studyRoutes: Handler = async (req, path) => {
       totalStudySeconds: 0,
     }
     db.studies.unshift(study)
-    db.studyCreationsUsed.set(user.id, used + 1)
+    recordStudyCreation(user)
     return json(toApi(study), { status: 201 })
   }
 

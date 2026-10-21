@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { ACCESS_TTL_MS, FREE_ENTITLEMENTS, SEED_USER } from './config'
+import { monthlyPeriod } from './period'
 
 export type StudyStatus = 'CREATED' | 'STARTED' | 'PAUSED' | 'COMPLETED' | 'ARCHIVED'
 
@@ -51,6 +52,7 @@ export const db = {
   sessions: new Map<string, Session>(),
   resetTokens: new Map<string, ResetToken>(),
   studies: [] as Study[],
+  /** Key: `${userId}:${YYYY-MM}` in the user's time zone (ADR-0009). */
   studyCreationsUsed: new Map<string, number>(),
 }
 
@@ -63,17 +65,32 @@ export function findUserByEmail(email: string) {
 }
 
 export function publicUser(user: User) {
-  return { id: user.id, email: user.email, displayName: user.displayName }
+  return { id: user.id, email: user.email, displayName: user.displayName, timeZone: user.timeZone }
 }
 
-export function usage(userId: string) {
+function creationsKey(user: User) {
+  return `${user.id}:${monthlyPeriod(user.timeZone).key}`
+}
+
+export function creationsUsed(user: User) {
+  return db.studyCreationsUsed.get(creationsKey(user)) ?? 0
+}
+
+export function recordStudyCreation(user: User) {
+  db.studyCreationsUsed.set(creationsKey(user), creationsUsed(user) + 1)
+}
+
+export function usage(user: User) {
   const limit = FREE_ENTITLEMENTS.limits.maxStudyCreationsPerMonth
-  const used = db.studyCreationsUsed.get(userId) ?? 0
+  const used = creationsUsed(user)
+  const { periodStart, periodEnd } = monthlyPeriod(user.timeZone)
   return {
     studyCreationsThisPeriod: {
       used,
       limit,
       remaining: Math.max(0, limit - used),
+      periodStart,
+      periodEnd,
     },
   }
 }
@@ -83,7 +100,7 @@ export function mePayload(user: User) {
     user: publicUser(user),
     plan: 'FREE' as const,
     entitlements: FREE_ENTITLEMENTS,
-    usage: usage(user.id),
+    usage: usage(user),
   }
 }
 

@@ -26,7 +26,13 @@ function session(overrides: { remaining?: number; maxActive?: number } = {}) {
       limits: { maxActiveStudies: overrides.maxActive ?? 3 },
     },
     usage: {
-      studyCreationsThisPeriod: { used: 10 - remaining, limit: 10, remaining },
+      studyCreationsThisPeriod: {
+        used: 10 - remaining,
+        limit: 10,
+        remaining,
+        periodStart: '2026-10-01T03:00:00.000Z',
+        periodEnd: '2026-11-01T03:00:00.000Z',
+      },
     },
   } as AuthSessionPayload
 }
@@ -86,6 +92,21 @@ describe('authStore entitlements', () => {
     await auth.resetPassword({ token: 'reset_token', password: 'new-password' })
     expect(auth.status).toBe('UNAUTHENTICATED')
     expect(auth.accessToken).toBeNull()
+  })
+
+  it('refreshUsage re-reads usage from /auth/me and keeps it on failure', async () => {
+    vi.mocked(authService.login).mockResolvedValue(session({ remaining: 3 }))
+    const auth = useAuthStore()
+    await auth.login('user@test.local', 'password')
+
+    const fresh = session({ remaining: 0 })
+    vi.mocked(authService.me).mockResolvedValueOnce(fresh)
+    await auth.refreshUsage()
+    expect(auth.canCreateStudy()).toBe(false)
+
+    vi.mocked(authService.me).mockRejectedValueOnce(new Error('network'))
+    await auth.refreshUsage()
+    expect(auth.usage?.studyCreationsThisPeriod.remaining).toBe(0)
   })
 
   it('falls back to UNAUTHENTICATED when the bootstrap refresh fails', async () => {
