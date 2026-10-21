@@ -22,6 +22,8 @@ const ENDPOINTS = [
   'POST /studies',
   'GET /studies/:id',
   'PATCH /studies/:id',
+  'GET /studies/:id/sessions?limit=',
+  'POST /studies/:id/sessions',
 ]
 
 const routes: Handler[] = [authRoutes, studyRoutes]

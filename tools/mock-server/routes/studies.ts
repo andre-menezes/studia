@@ -11,6 +11,7 @@ import {
   type WeekDay,
 } from '../db'
 import { STUDY_STATUSES, column, place } from '../board'
+import { sessionRoutes } from './sessions'
 import { json, problem, readJson, unauthorized, validationFailed, type Handler } from '../http'
 
 type RoutineInput = {
@@ -122,6 +123,13 @@ export const studyRoutes: Handler = async (req, path) => {
     return json(toApi(study), { status: 201 })
   }
 
+  const sessionsMatch = path.match(/^\/studies\/([^/]+)\/sessions$/)
+  if (sessionsMatch) {
+    const owned = db.studies.find((s) => s.id === sessionsMatch[1] && s.ownerId === user.id)
+    if (!owned) return problem(404, 'STUDY_NOT_FOUND', 'Not found')
+    return sessionRoutes(req, owned)
+  }
+
   const studyMatch = path.match(/^\/studies\/([^/]+)$/)
   if (!studyMatch) return null
   const study = db.studies.find((s) => s.id === studyMatch[1] && s.ownerId === user.id)
@@ -135,7 +143,6 @@ export const studyRoutes: Handler = async (req, path) => {
       objective?: string
       routine?: RoutineInput
       status?: StudyStatus
-      totalStudySeconds?: number
       position?: number
     }>(req)
 
@@ -144,9 +151,8 @@ export const studyRoutes: Handler = async (req, path) => {
     const hasRoutine = body?.routine !== undefined
     const hasStatus = body?.status !== undefined
     const hasPosition = body?.position !== undefined
-    const hasTotalStudy =
-      body?.totalStudySeconds !== undefined && body.totalStudySeconds !== null
-    if (!hasTitle && !hasObjective && !hasRoutine && !hasStatus && !hasTotalStudy && !hasPosition) {
+    // totalStudySeconds is read-only (ADR-0010): a body with only that field is 422.
+    if (!hasTitle && !hasObjective && !hasRoutine && !hasStatus && !hasPosition) {
       return validationFailed()
     }
     // Validate everything first so a rejected PATCH never changes data.
@@ -158,8 +164,6 @@ export const studyRoutes: Handler = async (req, path) => {
     if (hasObjective && !body!.objective?.trim()) return validationFailed()
     const routine = hasRoutine ? normalizeRoutine(body!.routine) : null
     if (hasRoutine && !routine) return validationFailed()
-    const totalStudy = Number(body?.totalStudySeconds)
-    if (hasTotalStudy && (!Number.isFinite(totalStudy) || totalStudy < 0)) return validationFailed()
     const nextStatus = body?.status ?? study.status
     const starting = nextStatus === 'STARTED' && study.status !== 'STARTED'
     if (starting && startedCount(user.id) >= FREE_ENTITLEMENTS.limits.maxActiveStudies) {
@@ -174,7 +178,6 @@ export const studyRoutes: Handler = async (req, path) => {
     if (moving || (hasPosition && nextStatus !== 'ARCHIVED')) {
       place(db.studies, study, nextStatus, body?.position ?? (moving ? 0 : study.position))
     }
-    if (hasTotalStudy) study.totalStudySeconds = Math.trunc(totalStudy)
     return json(toApi(study))
   }
 
