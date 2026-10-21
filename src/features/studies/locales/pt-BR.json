@@ -28,7 +28,9 @@
       "archiveConfirmTitle": "Arquivar este Estudo?",
       "archiveConfirm": "Essa ação não poderá ser desfeita. O Estudo sairá do fluxo ativo e não poderá ser movido de volta.",
       "archiveConfirmKeep": "Manter onde está",
-      "archiveConfirmAction": "Arquivar"
+      "archiveConfirmAction": "Arquivar",
+      "premium": "Premium",
+      "premiumCta": "Conhecer o Premium"
     },
     "detail": {
       "subtitle": "Revise e ajuste o que precisar — sem refazer o assistente.",

@@ -10,10 +10,13 @@ const props = defineProps<{
   logoutLabel: string;
   loggingOut: boolean;
   maxWidthClass?: string;
+  /** Shows the link to the plans page (FEATURE-0006) when set. */
+  plansLabel?: string;
 }>();
 
 const emit = defineEmits<{
   logout: [];
+  plans: [];
 }>();
 
 const initials = computed(() => {
@@ -49,6 +52,17 @@ const initials = computed(() => {
     </template>
 
     <template #actions>
+      <AppButton
+        v-if="plansLabel"
+        variant="text"
+        color="primary"
+        size="sm"
+        prepend-icon="workspace_premium"
+        @click="emit('plans')"
+      >
+        {{ plansLabel }}
+      </AppButton>
+
       <div
         v-if="displayName"
         class="flex min-w-0 max-w-[10rem] items-center gap-2 sm:max-w-[16rem]"

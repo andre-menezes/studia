@@ -31,6 +31,8 @@ Mapear `code` estável da API (RFC 9457 + extensão) para chaves i18n no fronten
 | `NOTE_NOT_FOUND` | 404 | `errors.NOTE_NOT_FOUND` | Note inexistente no Study |
 | `TASK_LIMIT_REACHED` | 422 | `errors.TASK_LIMIT_REACHED` | Teto técnico de 200 Tasks por Study (não é limite de plano) |
 | `NOTE_LIMIT_REACHED` | 422 | `errors.NOTE_LIMIT_REACHED` | Teto técnico de 100 Notes por Study (não é limite de plano) |
+| `BILLING_ALREADY_PREMIUM` | 409 | `errors.BILLING_ALREADY_PREMIUM` | Checkout já sendo Premium, exceto renovação Pix sobre período Pix ativo (FEATURE-0006) |
+| `BILLING_NOTHING_TO_CANCEL` | 409 | `errors.BILLING_NOTHING_TO_CANCEL` | Cancelar sem assinatura de cartão ativa |
 | `INTERNAL_ERROR` | 500 | `errors.INTERNAL_ERROR` | Falha inesperada |
 
 ## Exemplos

@@ -28,7 +28,9 @@
       "archiveConfirmTitle": "Archive this Study?",
       "archiveConfirm": "This cannot be undone. The Study will leave the active flow and cannot be moved back.",
       "archiveConfirmKeep": "Keep it here",
-      "archiveConfirmAction": "Archive"
+      "archiveConfirmAction": "Archive",
+      "premium": "Premium",
+      "premiumCta": "Discover Premium"
     },
     "detail": {
       "subtitle": "Review and adjust what you need — without redoing the wizard.",

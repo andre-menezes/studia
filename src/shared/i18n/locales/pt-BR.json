@@ -24,6 +24,8 @@
     "NOTE_NOT_FOUND": "Nota não encontrada.",
     "STUDY_READ_ONLY": "Este Estudo está arquivado e não pode ser alterado.",
     "TASK_LIMIT_REACHED": "Este Estudo atingiu o máximo de 200 tarefas.",
-    "NOTE_LIMIT_REACHED": "Este Estudo atingiu o máximo de 100 notas."
+    "NOTE_LIMIT_REACHED": "Este Estudo atingiu o máximo de 100 notas.",
+    "BILLING_ALREADY_PREMIUM": "Você já é Premium.",
+    "BILLING_NOTHING_TO_CANCEL": "Não há assinatura no cartão para cancelar."
   }
 }

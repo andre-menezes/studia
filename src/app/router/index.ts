@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { authRoutes, useAuthStore } from '@/features/auth'
+import { billingRoutes } from '@/features/billing'
 import { studiesRoutes } from '@/features/studies'
 
 export const router = createRouter({
   history: createWebHistory(),
-  routes: [...authRoutes, ...studiesRoutes],
+  routes: [...authRoutes, ...studiesRoutes, ...billingRoutes],
 })
 
 router.beforeEach((to) => {

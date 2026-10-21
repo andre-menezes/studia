@@ -24,6 +24,8 @@
     "NOTE_NOT_FOUND": "Note not found.",
     "STUDY_READ_ONLY": "This Study is archived and cannot be changed.",
     "TASK_LIMIT_REACHED": "This Study reached the maximum of 200 tasks.",
-    "NOTE_LIMIT_REACHED": "This Study reached the maximum of 100 notes."
+    "NOTE_LIMIT_REACHED": "This Study reached the maximum of 100 notes.",
+    "BILLING_ALREADY_PREMIUM": "You are already Premium.",
+    "BILLING_NOTHING_TO_CANCEL": "There is no card subscription to cancel."
   }
 }

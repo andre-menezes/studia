@@ -12,6 +12,7 @@ servers:
 tags:
   - name: auth
   - name: studies
+  - name: billing
 paths:
   /auth/login:
     post:
@@ -541,6 +542,81 @@ paths:
           $ref: '#/components/responses/Problem'
         '409':
           $ref: '#/components/responses/Problem'
+  /billing/subscription:
+    get:
+      tags: [billing]
+      summary: Current Premium subscription (FEATURE-0006)
+      operationId: getSubscription
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Subscription state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '401':
+          $ref: '#/components/responses/Problem'
+  /billing/checkout:
+    post:
+      tags: [billing]
+      summary: Start a Mercado Pago hosted checkout (ADR-0012)
+      description: >
+        CARD starts a monthly recurring subscription; PIX buys 30 days of Premium (and may renew an active
+        Pix period). The plan only changes when the gateway webhook confirms the payment.
+        A new checkout invalidates any open one. Returns 409 BILLING_ALREADY_PREMIUM while Premium,
+        except a PIX checkout on an active Pix period (renewal).
+      operationId: createCheckout
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [method]
+              properties:
+                method:
+                  $ref: '#/components/schemas/BillingMethod'
+      responses:
+        '201':
+          description: Checkout created; the client redirects to checkoutUrl
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [checkoutUrl]
+                properties:
+                  checkoutUrl:
+                    type: string
+                    format: uri
+        '401':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+  /billing/subscription/cancel:
+    post:
+      tags: [billing]
+      summary: Cancel the card subscription at the end of the paid period
+      operationId: cancelSubscription
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Subscription canceled; Premium stays until currentPeriodEnd
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
 components:
   securitySchemes:
     bearerAuth:
@@ -653,7 +729,7 @@ components:
           type: array
           items:
             type: string
-          example: [studies.create, statistics.advanced]
+          example: [studies.create, studies.unlimited]
         limits:
           type: object
           additionalProperties:
@@ -939,6 +1015,33 @@ components:
           minLength: 1
           maxLength: 10000
           description: Whitespace-only content is rejected with 422 VALIDATION_FAILED
+    BillingMethod:
+      type: string
+      enum: [CARD, PIX]
+    Subscription:
+      type: object
+      required: [plan, status, priceCents, currency, cancelAtPeriodEnd]
+      properties:
+        plan:
+          $ref: '#/components/schemas/Plan'
+        status:
+          type: string
+          enum: [NONE, PENDING, ACTIVE, CANCELED, EXPIRED]
+          description: CANCELED keeps Premium until currentPeriodEnd; EXPIRED means the paid period ended
+        method:
+          $ref: '#/components/schemas/BillingMethod'
+        priceCents:
+          type: integer
+          example: 5000
+        currency:
+          type: string
+          example: BRL
+        currentPeriodEnd:
+          type: string
+          format: date-time
+          description: Premium is valid until this instant (next charge for an active card subscription)
+        cancelAtPeriodEnd:
+          type: boolean
     Problem:
       type: object
       required: [type, title, status, code]

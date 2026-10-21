@@ -1,0 +1,62 @@
+{
+  "billing": {
+    "plans": {
+      "title": "Plans",
+      "subtitle": "Choose how you want to study with Studia.",
+      "back": "Back",
+      "loading": "Loading your subscription",
+      "free": {
+        "name": "Free",
+        "price": "No cost",
+        "features": [
+          "Limited studies started at once",
+          "Limited studies created per month",
+          "Tasks, notes and session timer"
+        ]
+      },
+      "premium": {
+        "name": "Premium",
+        "perMonth": "{price}/month",
+        "features": [
+          "Unlimited started studies",
+          "Unlimited study creation",
+          "Study statistics (coming soon)",
+          "Tasks, notes and session timer"
+        ]
+      },
+      "current": "Your plan",
+      "payCard": "Subscribe with card",
+      "payPix": "Pay with Pix (30 days)",
+      "renewPix": "Renew with Pix (+30 days)",
+      "cardHint": "Automatic monthly charge on your card. Cancel anytime.",
+      "pixHint": "Pix unlocks 30 days of Premium. Renew whenever you like.",
+      "secureCheckout": "Payment happens on Mercado Pago. Studia never receives your card details.",
+      "retry": "Try again"
+    },
+    "status": {
+      "active": {
+        "CARD": "Premium active on card. Next charge on {date}.",
+        "PIX": "Premium active via Pix until {date}."
+      },
+      "canceled": "Subscription canceled. Premium stays until {date}.",
+      "expired": "Your Premium has expired. Subscribe again to get unlimited studies back.",
+      "pending": "A payment is being processed. Premium unlocks as soon as it is approved."
+    },
+    "cancel": {
+      "action": "Cancel subscription",
+      "confirmTitle": "Cancel the subscription?",
+      "confirmDescription": "You stay Premium until {date}. After that you go back to Free.",
+      "confirm": "Cancel subscription",
+      "keep": "Keep Premium"
+    },
+    "return": {
+      "title": "Payment",
+      "checking": "Confirming the payment with Mercado Pago…",
+      "success": "All set! You are now Premium.",
+      "pending": "Your payment is still being processed. Premium unlocks automatically once it is approved.",
+      "rejected": "The payment was not approved. Nothing was charged.",
+      "goHome": "Go to my studies",
+      "goPlans": "See plans"
+    }
+  }
+}
