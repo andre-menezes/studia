@@ -59,18 +59,18 @@ Study
 
 ### Tasks e Notes
 
-Recursos simples **dentro** do Study no MVP (não domínios autônomos). Podem ser promovidos a features depois.
+Recursos simples **dentro** do Study no MVP (não domínios autônomos). Podem ser promovidos a features depois. Modelo em FEATURE-0003.
 
 ### Timer e StudySession
 
 - Timer: auxilia; **não limita**. Usuário pode continuar após o tempo planejado.
-- `StudySession` (histórico/estatísticas): conceito futuro, **não obrigatório no MVP**.
+- `StudySession`: cada bloco de estudo é **gravado desde o MVP** (ADR-0010); telas de estatística são pós-MVP.
 
 ## Planos (direção)
 
 - `FREE` / `PREMIUM`
 - Free (exemplos): máx. 3 Studies STARTED; máx. 10 criações/mês
-- Limite mensal = criações no período (não devolvidas ao arquivar/excluir)
+- Limite mensal = criações no período (não devolvidas ao arquivar/excluir); período = mês calendário no fuso do usuário (ADR-0009)
 - Detalhe de entitlements: ADR-0004
 
 ## Dashboard

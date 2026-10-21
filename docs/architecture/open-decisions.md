@@ -32,6 +32,12 @@ Substituir a lista §56–57 da discussão inicial por um backlog vivo de decis�
 | Estratégia de testes (mínimo MVP) | `docs/architecture/testing.md` |
 | FEATURE Study home / detalhe / edição | FEATURE-0002 |
 | CI (typecheck, testes, build) | `docs/architecture/ci.md` |
+| Período da cota mensal de criações | ADR-0009 |
+| StudySession no MVP (gravar sessões, sem estatísticas) | ADR-0010 |
+| Modelo de Task / Note | FEATURE-0003 |
+| Cadastro e recuperação de senha | FEATURE-0004 |
+| Ordem do board persistida | FEATURE-0005 |
+| Backend em repositório separado | ADR-0011 |
 
 ## Abertas (próximos passos sugeridos)
 
@@ -39,12 +45,11 @@ Ordenado pela sequência útil de documentação:
 
 | # | Tema | Artefato sugerido |
 |---|---|---|
-| 1 | Sessões multi-dispositivo / revogação (UI) | ADR (pode adiar pós-MVP) |
-| 2 | Período exato da cota mensal de criações | ADR de billing/usage |
+| 1 | Sessões multi-dispositivo / revogação (UI) — **adiado pós-MVP** (decisão D8, 2026-10-21) | ADR |
 | 3 | a11y aprofundada / SEO | guidelines |
 | 4 | CD (deploy) + versionamento do app — CI já fechado em `ci.md` | guideline / ADR |
-| 5 | Modelo definitivo de Task / Note | FEATURE ou domain spec |
-| 6 | Necessidade de StudySession no roadmap | product decision |
+| 7 | Gateway de pagamento, preço do Premium | ADR-0012 (Proposed) |
+| 8 | Formatter de código (Prettier/Biome) | guideline |
 
 ## Critério para apagar o arquivo histórico
 

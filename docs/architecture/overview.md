@@ -41,7 +41,7 @@ Orientar a leitura da documentação arquitetural da Studia.
 
 Em ordem sugerida:
 
-1. Evoluir Tasks/Notes dentro do Study (próximo domínio após FEATURE-0002)
+1. Implementar FEATURE-0003, 0004, 0005 e ADR-0009/0010
 2. CD (deploy) + versionamento do app
 3. a11y aprofundada / SEO (quando houver superfície marketing ou rotas públicas)
 
