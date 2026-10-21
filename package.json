@@ -10,6 +10,8 @@
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "vue-tsc -b --pretty false",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o storybook-static"
   },
@@ -29,10 +31,13 @@
     "@tailwindcss/vite": "4.1.11",
     "@types/node": "22.10.7",
     "@vitejs/plugin-vue": "5.2.1",
+    "@vue/test-utils": "2.4.6",
+    "happy-dom": "18.0.1",
     "storybook": "8.6.14",
     "tailwindcss": "4.1.11",
     "typescript": "5.7.3",
     "vite": "6.0.11",
+    "vitest": "3.2.4",
     "vue-tsc": "2.2.0"
   }
 }
