@@ -28,6 +28,7 @@ Orientar a leitura da documentação arquitetural da Studia.
 | UI / componentes shared              | `ui.md`                               |
 | Layouts e navegação                  | `layouts.md`                          |
 | Testes (mínimo MVP)                  | `testing.md`                          |
+| CI                                   | `ci.md`                               |
 | Backlog de decisões                  | `open-decisions.md`                   |
 
 ## Backend (direção, ainda não implementado)
@@ -41,7 +42,7 @@ Orientar a leitura da documentação arquitetural da Studia.
 Em ordem sugerida:
 
 1. Evoluir Tasks/Notes dentro do Study (próximo domínio após FEATURE-0002)
-2. CI/CD + versionamento do app
+2. CD (deploy) + versionamento do app
 3. a11y aprofundada / SEO (quando houver superfície marketing ou rotas públicas)
 
 ## Fonte de premissas

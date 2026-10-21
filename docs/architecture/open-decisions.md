@@ -31,6 +31,7 @@ Substituir a lista §56–57 da discussão inicial por um backlog vivo de decis�
 | Layouts e navegação (MVP) | `docs/architecture/layouts.md` |
 | Estratégia de testes (mínimo MVP) | `docs/architecture/testing.md` |
 | FEATURE Study home / detalhe / edição | FEATURE-0002 |
+| CI (typecheck, testes, build) | `docs/architecture/ci.md` |
 
 ## Abertas (próximos passos sugeridos)
 
@@ -41,7 +42,7 @@ Ordenado pela sequência útil de documentação:
 | 1 | Sessões multi-dispositivo / revogação (UI) | ADR (pode adiar pós-MVP) |
 | 2 | Período exato da cota mensal de criações | ADR de billing/usage |
 | 3 | a11y aprofundada / SEO | guidelines |
-| 4 | CI/CD + versionamento do app | guideline / ADR |
+| 4 | CD (deploy) + versionamento do app — CI já fechado em `ci.md` | guideline / ADR |
 | 5 | Modelo definitivo de Task / Note | FEATURE ou domain spec |
 | 6 | Necessidade de StudySession no roadmap | product decision |
 

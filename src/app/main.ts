@@ -15,12 +15,19 @@ for (const [locale, messages] of Object.entries(studiesMessages)) {
   i18n.global.mergeLocaleMessage(locale, messages as Record<string, unknown>)
 }
 
-const app = createApp(App)
-const pinia = createPinia()
-app.use(pinia)
-app.use(i18n)
+// Async function instead of top-level await: Vite's default build target does not support it.
+async function bootstrap() {
+  const app = createApp(App)
+  const pinia = createPinia()
+  app.use(pinia)
+  app.use(i18n)
 
-await initSession()
-app.use(router)
-await router.isReady()
-app.mount('#app')
+  await initSession()
+  app.use(router)
+  await router.isReady()
+  app.mount('#app')
+}
+
+bootstrap().catch((error: unknown) => {
+  console.error('[studia] bootstrap failed', error)
+})

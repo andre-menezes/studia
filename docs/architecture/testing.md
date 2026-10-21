@@ -25,7 +25,16 @@ src/**/*.spec.ts              # unit / component colocalizados
 tests/e2e/**/*.spec.ts        # jornadas (Playwright ou equivalente escolhido na implantação)
 ```
 
-Criar `tests/e2e` só quando o primeiro E2E existir. Preferir runner já alinhado ao Vite/Bun quando for introduzido (Vitest para unit/component).
+Criar `tests/e2e` só quando o primeiro E2E existir.
+
+## Ferramentas
+
+- **Vitest** (`vitest.config.ts`, reaproveita `vite.config.ts` e o alias `@`) com ambiente `happy-dom`.
+- **@vue/test-utils** para composables com ciclo de vida (`onUnmounted`) e componentes.
+- Comandos: `bun run test` (uma vez, usado no CI) e `bun run test:watch`. **Não** usar `bun test`: ele chama o runner nativo do Bun, que não entende `vi.mock` nem o ambiente `happy-dom`.
+- Timers: usar `vi.useFakeTimers()` em vez de esperar tempo real.
+- HTTP: mockar `ofetch` ou o `service` da feature; nunca chamar rede de verdade em unit test.
+- O CI roda os testes em todo PR (`docs/architecture/ci.md`).
 
 ## Regras
 

@@ -37,3 +37,12 @@ bun run storybook
 ```
 
 Abre em `http://localhost:6006`. Build estático: `bun run build-storybook`.
+
+## Testes e CI
+
+```bash
+bun run test        # Vitest (unit/component)
+bun run typecheck
+```
+
+Todo PR para `develop` roda typecheck, testes e builds no GitHub Actions — ver [`docs/architecture/ci.md`](docs/architecture/ci.md).
