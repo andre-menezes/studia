@@ -9,7 +9,10 @@ import {
   type StudyRoutineTime,
   type WeekDay,
 } from "../domain/studyRoutine";
-import { useStudySessionTimer } from "../composables/useStudySessionTimer";
+import {
+  useStudySessionTimer,
+  type StudyBlock,
+} from "../composables/useStudySessionTimer";
 import {
   playSessionChime,
   unlockSessionAudio,
@@ -31,7 +34,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   editDuration: [];
-  commitStudySeconds: [deltaSeconds: number];
+  commitStudySeconds: [deltaSeconds: number, block: StudyBlock];
   /** True while a session is in progress (studying / paused / resting). */
   sessionActive: [active: boolean];
 }>();
@@ -63,7 +66,8 @@ const {
   startRest,
   skipRest,
 } = useStudySessionTimer(toRef(props, "preset"), {
-  onCommitStudySeconds: (delta) => emit("commitStudySeconds", delta),
+  onCommitStudySeconds: (delta, block) =>
+    emit("commitStudySeconds", delta, block),
   pomodoro: pomodoroRef,
   onSignal: (signal) => {
     if (signal === "studyComplete") {
