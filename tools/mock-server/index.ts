@@ -122,7 +122,7 @@ function problem(status: number, code: string, title: string) {
   )
 }
 
-function corsHeaders(req: Request) {
+function corsHeaders() {
   const headers = new Headers()
   headers.set('Access-Control-Allow-Origin', ORIGIN)
   headers.set('Access-Control-Allow-Credentials', 'true')
@@ -134,7 +134,7 @@ function corsHeaders(req: Request) {
 
 function withCors(req: Request, res: Response) {
   const headers = new Headers(res.headers)
-  for (const [k, v] of corsHeaders(req)) headers.set(k, v)
+  for (const [k, v] of corsHeaders()) headers.set(k, v)
   return new Response(res.body, { status: res.status, headers })
 }
 

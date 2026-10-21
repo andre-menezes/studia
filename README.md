@@ -44,6 +44,7 @@ Abre em `http://localhost:6006`. Build estático: `bun run build-storybook`.
 bun run test        # Vitest (unit/component)
 bun run test:e2e    # Playwright (sobe mock + app sozinho)
 bun run typecheck
+bun run lint
 ```
 
 Todo PR para `develop` roda typecheck, testes e builds no GitHub Actions — ver [`docs/architecture/ci.md`](docs/architecture/ci.md).
