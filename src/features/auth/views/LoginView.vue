@@ -1,19 +1,25 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { ApiError } from "@/shared/http";
+import AuthLink from "../components/AuthLink.vue";
 import LoginForm from "../components/LoginForm.vue";
 import { useAuthStore } from "../stores/authStore";
 
 const { t } = useI18n();
 const router = useRouter();
+const route = useRoute();
 const auth = useAuthStore();
 
 const email = ref("");
 const password = ref("");
 const errorCode = ref<string | null>(null);
 const pending = ref(false);
+
+const noticeMessage = computed(() =>
+  route.query.reset === "1" ? t("auth.reset.successNotice") : null,
+);
 
 const errorMessage = computed(() =>
   errorCode.value
@@ -36,24 +42,31 @@ async function onSubmit() {
 </script>
 
 <template>
-  <main
-    class="flex min-h-screen items-center justify-center bg-background px-4 py-10"
+  <LoginForm
+    :app-name="t('common.appName')"
+    :subtitle="t('auth.login.subtitle')"
+    :email="email"
+    :password="password"
+    :email-label="t('auth.login.email')"
+    :password-label="t('auth.login.password')"
+    :email-placeholder="t('auth.login.emailPlaceholder')"
+    :submit-label="t('auth.login.submit')"
+    :loading-label="t('common.loading')"
+    :pending="pending"
+    :error-message="errorMessage"
+    :notice-message="noticeMessage"
+    @update:email="email = $event"
+    @update:password="password = $event"
+    @submit="onSubmit"
   >
-    <LoginForm
-      :app-name="t('common.appName')"
-      :subtitle="t('auth.login.subtitle')"
-      :email="email"
-      :password="password"
-      :email-label="t('auth.login.email')"
-      :password-label="t('auth.login.password')"
-      :email-placeholder="t('auth.login.emailPlaceholder')"
-      :submit-label="t('auth.login.submit')"
-      :loading-label="t('common.loading')"
-      :pending="pending"
-      :error-message="errorMessage"
-      @update:email="email = $event"
-      @update:password="password = $event"
-      @submit="onSubmit"
-    />
-  </main>
+    <template #footer>
+      <AuthLink :to="{ name: 'forgot-password' }">
+        {{ t("auth.login.forgotPassword") }}
+      </AuthLink>
+      <p class="text-muted">
+        {{ t("auth.login.noAccount") }}
+        <AuthLink :to="{ name: 'signup' }">{{ t("auth.login.signUp") }}</AuthLink>
+      </p>
+    </template>
+  </LoginForm>
 </template>

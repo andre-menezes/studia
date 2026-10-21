@@ -103,6 +103,17 @@ describe('http client', () => {
     expect(token).toBeNull()
   })
 
+  it.each(['/auth/register', '/auth/password/reset'])(
+    'does not try to refresh a 401 from %s',
+    async (url) => {
+      raw.mockRejectedValueOnce(httpError(401, { code: 'AUTH_UNAUTHORIZED' }))
+      await expect(http(url, { method: 'POST' })).rejects.toMatchObject({
+        code: 'AUTH_UNAUTHORIZED',
+      })
+      expect(raw).toHaveBeenCalledTimes(1)
+    },
+  )
+
   it('does not try to refresh a 401 from the login endpoint', async () => {
     raw.mockRejectedValueOnce(httpError(401, { code: 'AUTH_INVALID_CREDENTIALS' }))
     await expect(http('/auth/login', { method: 'POST' })).rejects.toMatchObject({

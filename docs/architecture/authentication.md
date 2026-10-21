@@ -30,6 +30,8 @@ src/shared/http/       # Bearer + single-flight refresh (ADR-0005)
 4. Logout centralizado em `features/auth` (POST logout + limpar client).
 5. Após login/refresh, hidratar entitlements/usage com a sessão.
 6. TTLs MVP: access ~15 min; refresh sliding ~14 dias (servidor/mock é autoridade).
+7. Rotas de visitante (`meta.guestOnly`: login, cadastro, esqueci/redefinir senha) redirecionam para a home quando já há sessão.
+8. Endpoints públicos de auth (`/auth/login`, `/auth/register`, `/auth/password/*`, `/auth/refresh`) **nunca** disparam refresh em 401 (`shared/http`).
 
 ## Fluxos
 
@@ -49,6 +51,14 @@ shared/http → refresh single-flight → retry 1x | limpar sessão
 
 ```text
 POST /auth/login → access memória + cookie refresh → carregar /me (se necessário) → AUTHENTICATED
+```
+
+### Cadastro e recuperação de senha (FEATURE-0004)
+
+```text
+POST /auth/register          → mesma sessão do login → AUTHENTICATED → home
+POST /auth/password/forgot   → 202 sempre (sem enumeração) → e-mail com link
+POST /auth/password/reset    → 204 + revoga todas as sessões e tokens de reset → /login?reset=1
 ```
 
 ## Exemplos

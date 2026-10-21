@@ -22,7 +22,17 @@ CORS: `http://localhost:5173` (override com `MOCK_CORS_ORIGIN`)
 | E-mail | `demo@studia.app` |
 | Senha | `studia123` |
 
-Não há cadastro público neste mock — use o seed.
+Cadastro (`POST /auth/register`) cria usuários em memória; cada usuário só vê os próprios Studies. Tudo zera ao reiniciar o mock.
+
+## Recuperação de senha
+
+O mock não envia e-mail. `POST /auth/password/forgot` imprime o link no console:
+
+```text
+RESET LINK: http://localhost:5173/reset-password?token=reset_…
+```
+
+Para testes E2E, com `MOCK_DEV_ENDPOINTS=1` (o `playwright.config.ts` já liga), `GET /api/v1/__dev/reset-link?email=…` devolve o último link gerado para o e-mail. Esse endpoint existe **só no mock** e fica desligado no `bun run mock` padrão.
 
 ## Notas de contrato (MVP)
 

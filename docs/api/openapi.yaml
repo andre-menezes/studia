@@ -40,6 +40,84 @@ paths:
           $ref: '#/components/responses/Problem'
         '422':
           $ref: '#/components/responses/Problem'
+  /auth/register:
+    post:
+      tags: [auth]
+      summary: Create an account and start a session (FEATURE-0004)
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Account created and authenticated
+          headers:
+            Set-Cookie:
+              description: Refresh token HttpOnly cookie
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSessionResponse'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+  /auth/password/forgot:
+    post:
+      tags: [auth]
+      summary: Request a password reset link
+      description: >
+        Always answers 202, whether or not the email has an account (no account enumeration).
+        The reset token is single-use and expires in 1 hour.
+      operationId: forgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '202':
+          description: Request accepted
+        '422':
+          $ref: '#/components/responses/Problem'
+  /auth/password/reset:
+    post:
+      tags: [auth]
+      summary: Set a new password with a reset token
+      description: A successful reset revokes every session and every pending reset token of the user.
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties:
+                token:
+                  type: string
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 128
+      responses:
+        '204':
+          description: Password updated
+        '400':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
   /auth/refresh:
     post:
       tags: [auth]
@@ -198,6 +276,25 @@ components:
         type: string
         format: uuid
   schemas:
+    RegisterRequest:
+      type: object
+      required: [email, password, displayName]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 80
+        timeZone:
+          type: string
+          description: IANA time zone from the browser (ADR-0009). Invalid or missing → UTC.
+          example: America/Sao_Paulo
     LoginRequest:
       type: object
       required: [email, password]

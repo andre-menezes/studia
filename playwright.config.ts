@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const MOCK_PORT = 3100
-const APP_PORT = 5180
+import { APP_PORT, MOCK_PORT } from './tests/e2e/ports'
+
 const APP_URL = `http://localhost:${APP_PORT}`
 
 export default defineConfig({
@@ -21,7 +21,7 @@ export default defineConfig({
     {
       command: 'bun run mock',
       url: `http://localhost:${MOCK_PORT}/api/v1/auth/me`,
-      env: { MOCK_PORT: String(MOCK_PORT), MOCK_CORS_ORIGIN: APP_URL },
+      env: { MOCK_PORT: String(MOCK_PORT), MOCK_CORS_ORIGIN: APP_URL, MOCK_APP_URL: APP_URL, MOCK_DEV_ENDPOINTS: '1' },
       reuseExistingServer: false,
     },
     {

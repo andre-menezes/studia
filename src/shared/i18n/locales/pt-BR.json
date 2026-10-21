@@ -16,6 +16,9 @@
     "VALIDATION_FAILED": "Verifique os dados informados.",
     "STUDY_NOT_FOUND": "Estudo não encontrado.",
     "STUDY_CREATE_LIMIT_REACHED": "Você atingiu o limite mensal de criação de Estudos.",
-    "STUDY_ACTIVE_LIMIT_REACHED": "Você atingiu o limite de Estudos iniciados."
+    "STUDY_ACTIVE_LIMIT_REACHED": "Você atingiu o limite de Estudos iniciados.",
+    "AUTH_EMAIL_TAKEN": "Já existe uma conta com esse e-mail.",
+    "AUTH_PASSWORD_TOO_WEAK": "A senha não atende aos requisitos mínimos.",
+    "AUTH_RESET_TOKEN_INVALID": "Este link de redefinição é inválido ou expirou."
   }
 }

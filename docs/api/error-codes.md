@@ -19,6 +19,9 @@ Mapear `code` estável da API (RFC 9457 + extensão) para chaves i18n no fronten
 | `AUTH_UNAUTHORIZED` | 401 | `errors.AUTH_UNAUTHORIZED` | Access inválido/ausente |
 | `AUTH_REFRESH_INVALID` | 401 | `errors.AUTH_REFRESH_INVALID` | Refresh cookie inválido/expirado/reusado |
 | `AUTH_FORBIDDEN` | 403 | `errors.AUTH_FORBIDDEN` | Autenticado sem permissão |
+| `AUTH_EMAIL_TAKEN` | 409 | `errors.AUTH_EMAIL_TAKEN` | Cadastro com e-mail já existente |
+| `AUTH_PASSWORD_TOO_WEAK` | 422 | `errors.AUTH_PASSWORD_TOO_WEAK` | Senha fora das regras (8–128 caracteres) |
+| `AUTH_RESET_TOKEN_INVALID` | 400 | `errors.AUTH_RESET_TOKEN_INVALID` | Token de reset inválido, expirado ou já usado |
 | `VALIDATION_FAILED` | 422 | `errors.VALIDATION_FAILED` | Body inválido (genérico) |
 | `STUDY_NOT_FOUND` | 404 | `errors.STUDY_NOT_FOUND` | Study inexistente |
 | `STUDY_CREATE_LIMIT_REACHED` | 403 | `errors.STUDY_CREATE_LIMIT_REACHED` | Cota mensal de criações |
