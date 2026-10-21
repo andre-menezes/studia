@@ -71,6 +71,7 @@ Recursos simples **dentro** do Study no MVP (não domínios autônomos). Podem s
 - `FREE` / `PREMIUM`
 - Free (exemplos): máx. 3 Studies STARTED; máx. 10 criações/mês
 - Limite mensal = criações no período (não devolvidas ao arquivar/excluir); período = mês calendário no fuso do usuário (ADR-0009)
+- Premium: R$ 50,00/mês via Mercado Pago (cartão recorrente ou Pix de 30 dias), ADR-0012 / FEATURE-0006
 - Detalhe de entitlements: ADR-0004
 
 ## Dashboard

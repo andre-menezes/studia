@@ -38,6 +38,7 @@ Substituir a lista §56–57 da discussão inicial por um backlog vivo de decis�
 | Cadastro e recuperação de senha | FEATURE-0004 |
 | Ordem do board persistida | FEATURE-0005 |
 | Backend em repositório separado | ADR-0011 |
+| Pagamento: R$ 50/mês, PF, Mercado Pago (cartão recorrente + Pix 30 dias) | ADR-0012, FEATURE-0006 |
 
 ## Abertas (próximos passos sugeridos)
 
@@ -48,7 +49,6 @@ Ordenado pela sequência útil de documentação:
 | 1 | Sessões multi-dispositivo / revogação (UI) — **adiado pós-MVP** (decisão D8, 2026-10-21) | ADR |
 | 3 | a11y aprofundada / SEO | guidelines |
 | 4 | CD (deploy) + versionamento do app — CI já fechado em `ci.md` | guideline / ADR |
-| 7 | Gateway de pagamento, preço do Premium | ADR-0012 (Proposed) |
 | 8 | Formatter de código (Prettier/Biome) | guideline |
 
 ## Critério para apagar o arquivo histórico
