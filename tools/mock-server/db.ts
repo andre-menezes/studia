@@ -43,6 +43,16 @@ export type Note = {
   updatedAt: string
 }
 
+export type StudySession = {
+  id: string
+  clientSessionId: string
+  studyId: string
+  startedAt: string
+  endedAt: string
+  studySeconds: number
+  createdAt: string
+}
+
 export type User = {
   id: string
   email: string
@@ -73,6 +83,8 @@ export const db = {
   /** FEATURE-0003: `position` is kept dense (0..n-1) per study. */
   tasks: [] as Task[],
   notes: [] as Note[],
+  /** Newest last; the route sorts on read (ADR-0010). */
+  studySessions: [] as StudySession[],
   /** Key: `${userId}:${YYYY-MM}` in the user's time zone (ADR-0009). */
   studyCreationsUsed: new Map<string, number>(),
 }

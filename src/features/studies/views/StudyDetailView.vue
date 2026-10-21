@@ -19,6 +19,7 @@ import StudyEditFieldDialog, {
 import StudyNotesSection from "../components/StudyNotesSection.vue";
 import StudySessionTimer from "../components/StudySessionTimer.vue";
 import StudyTasksSection from "../components/StudyTasksSection.vue";
+import type { StudyBlock } from "../composables/useStudySessionTimer";
 import { canShowSessionTimer } from "../domain/studyRoutine";
 import { useStudyDetailStore } from "../stores/studyDetailStore";
 import { useStudyListStore } from "../stores/studyListStore";
@@ -135,14 +136,14 @@ async function onSave(payload: UpdateStudyInput) {
   }
 }
 
-async function onCommitStudySeconds(deltaSeconds: number) {
+async function onCommitStudySeconds(deltaSeconds: number, block: StudyBlock) {
   if (!study.value || deltaSeconds <= 0) return;
-  const nextTotal = (study.value.totalStudySeconds ?? 0) + deltaSeconds;
-  try {
-    await detail.update(study.value.id, { totalStudySeconds: nextTotal });
-  } catch {
-    /* métrica best-effort; não bloquear o timer */
-  }
+  // Best-effort: failures stay queued in the store and never block the timer.
+  await detail.recordSession(study.value.id, {
+    startedAt: block.startedAt.toISOString(),
+    endedAt: block.endedAt.toISOString(),
+    studySeconds: deltaSeconds,
+  });
 }
 
 /**

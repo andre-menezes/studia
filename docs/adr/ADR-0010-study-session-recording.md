@@ -15,20 +15,21 @@ O timer do detalhe (FEATURE-0002) já existe e acumula `totalStudySeconds` via `
 3. Contrato:
 
 ```text
-POST /studies/{studyId}/sessions   { startedAt, endedAt, studySeconds }  → 201 StudySession
+POST /studies/{studyId}/sessions   { clientSessionId, startedAt, endedAt, studySeconds }  → 201 StudySession
 GET  /studies/{studyId}/sessions   ?limit=                               → 200 { items }
 ```
 
 4. O servidor valida `0 < studySeconds ≤ (endedAt − startedAt) + 5s de tolerância` e incrementa `Study.totalStudySeconds`.
 5. `totalStudySeconds` passa a ser **somente leitura** para o client (sai de `UpdateStudyRequest`). O total é derivado das sessões.
-6. Falha ao gravar: o client mantém o bloco pendente em memória e tenta de novo no próximo flush. Perder blocos pendentes ao fechar a aba é aceito no MVP.
+6. Falha ao gravar: em erro transitório (rede, 5xx, 408, 429) o client mantém o bloco pendente em memória e tenta de novo no próximo flush; blocos rejeitados (422, 404) são descartados para não travar a fila. Os envios são serializados. Perder blocos pendentes ao fechar a aba é aceito no MVP.
 7. Timer continua **não limitando** o usuário (`vision.md`); a sessão só registra.
+8. Cada bloco leva um `clientSessionId` (UUID gerado no client). O servidor é idempotente por esse id: um retry de um bloco já gravado responde 200 com a sessão existente e não soma de novo.
 
 ## Consequências
 
 - Estatísticas futuras não exigem migração de dados.
 - Uma requisição a mais por bloco (baixo volume).
-- `useStudySessionTimer` não muda: o detalhe troca o `PATCH totalStudySeconds` por `POST sessions`.
+- `useStudySessionTimer` passa a informar os limites de relógio (`startedAt`/`endedAt`) de cada bloco; o detalhe troca o `PATCH totalStudySeconds` por `POST sessions`.
 
 ## Alternativas consideradas
 

@@ -26,6 +26,8 @@ const ENDPOINTS = [
   'PATCH|DELETE /studies/:id/tasks/:taskId',
   'GET|POST /studies/:id/notes',
   'PATCH|DELETE /studies/:id/notes/:noteId',
+  'GET /studies/:id/sessions?limit=',
+  'POST /studies/:id/sessions',
 ]
 
 const routes: Handler[] = [authRoutes, studyRoutes]

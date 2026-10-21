@@ -11,6 +11,7 @@ import {
   type WeekDay,
 } from '../db'
 import { workspaceRoutes } from './workspace'
+import { sessionRoutes } from './sessions'
 import { json, problem, readJson, unauthorized, validationFailed, type Handler } from '../http'
 
 type RoutineInput = {
@@ -124,6 +125,13 @@ export const studyRoutes: Handler = async (req, path) => {
     return workspaceRoutes(req, owned, kind as 'tasks' | 'notes', itemId)
   }
 
+  const sessionsMatch = path.match(/^\/studies\/([^/]+)\/sessions$/)
+  if (sessionsMatch) {
+    const owned = db.studies.find((s) => s.id === sessionsMatch[1] && s.ownerId === user.id)
+    if (!owned) return problem(404, 'STUDY_NOT_FOUND', 'Not found')
+    return sessionRoutes(req, owned)
+  }
+
   const studyMatch = path.match(/^\/studies\/([^/]+)$/)
   if (!studyMatch) return null
   const study = db.studies.find((s) => s.id === studyMatch[1] && s.ownerId === user.id)
@@ -137,16 +145,14 @@ export const studyRoutes: Handler = async (req, path) => {
       objective?: string
       routine?: RoutineInput
       status?: StudyStatus
-      totalStudySeconds?: number
     }>(req)
 
     const hasTitle = body?.title !== undefined
     const hasObjective = body?.objective !== undefined
     const hasRoutine = body?.routine !== undefined
     const hasStatus = body?.status !== undefined
-    const hasTotalStudy =
-      body?.totalStudySeconds !== undefined && body.totalStudySeconds !== null
-    if (!hasTitle && !hasObjective && !hasRoutine && !hasStatus && !hasTotalStudy) {
+    // totalStudySeconds is read-only (ADR-0010): a body with only that field is 422.
+    if (!hasTitle && !hasObjective && !hasRoutine && !hasStatus) {
       return validationFailed()
     }
 
@@ -170,11 +176,6 @@ export const studyRoutes: Handler = async (req, path) => {
         return activeLimitReached()
       }
       study.status = nextStatus
-    }
-    if (hasTotalStudy) {
-      const value = Number(body!.totalStudySeconds)
-      if (!Number.isFinite(value) || value < 0) return validationFailed()
-      study.totalStudySeconds = Math.trunc(value)
     }
     return json(toApi(study))
   }
