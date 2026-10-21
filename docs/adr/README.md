@@ -64,3 +64,7 @@ O que passa a ser mais fácil, mais difícil ou proibido.
 | [ADR-0006](./ADR-0006-authentication-strategy.md)            | Authentication strategy            | Accepted |
 | [ADR-0007](./ADR-0007-api-contract.md)                       | API contract                       | Accepted |
 | [ADR-0008](./ADR-0008-local-http-mock-stub.md)               | Local HTTP mock stub (DX)          | Accepted |
+| [ADR-0009](./ADR-0009-monthly-creation-quota-period.md)      | Monthly creation quota period      | Accepted |
+| [ADR-0010](./ADR-0010-study-session-recording.md)            | StudySession recording             | Accepted |
+| [ADR-0011](./ADR-0011-backend-repository.md)                 | Backend repository and contract    | Accepted |
+| [ADR-0012](./ADR-0012-payments-gateway.md)                   | Payments gateway                   | Proposed |
