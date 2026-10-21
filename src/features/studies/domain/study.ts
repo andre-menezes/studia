@@ -28,6 +28,8 @@ export type Study = {
   createdAt: string
   /** Accumulated study session seconds (excludes rest). */
   totalStudySeconds?: number
+  /** 0-based index inside the board column of its status (FEATURE-0005). */
+  position?: number
 }
 
 export type CreateStudyInput = {
@@ -43,6 +45,8 @@ export type UpdateStudyInput = {
   routine?: StudyRoutine
   status?: StudyStatus
   totalStudySeconds?: number
+  /** Desired index in the target column; the server reindexes the others. */
+  position?: number
 }
 
 /** Board column order on the home screen. */

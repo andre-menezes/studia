@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import type {
   CreateStudyInput,
   Study,
+  StudyStatus,
   UpdateStudyInput,
 } from '../domain/study'
 import { useAuthStore } from '@/features/auth'
@@ -60,6 +61,7 @@ export const useStudyListStore = defineStore('study-list', () => {
   }
 
   async function updateStudy(studyId: string, input: UpdateStudyInput) {
+    const previousStatus = data.value.find((s) => s.id === studyId)?.status
     const updated = await studyService.update(studyId, input)
     // Keep structured routine fields if the API echoes only the frequency label.
     if (input.routine) {
@@ -73,6 +75,11 @@ export const useStudyListStore = defineStore('study-list', () => {
       }
     }
     upsert(updated)
+    // The server puts a status change without position on top of the new column (FEATURE-0005 §2).
+    if (previousStatus && updated.status !== previousStatus && input.position === undefined) {
+      const top = data.value.find((s) => s.status === updated.status && s.id !== studyId)
+      reorderInBoard(studyId, top?.id ?? null)
+    }
     return updated
   }
 
@@ -108,6 +115,57 @@ export const useStudyListStore = defineStore('study-list', () => {
     data.value = list
   }
 
+  /**
+   * Moves a card on the board (status and/or order) and persists it (FEATURE-0005).
+   * Optimistic: the board changes at once and goes back to the previous order on error.
+   */
+  async function moveInBoard(
+    studyId: string,
+    toStatus: StudyStatus,
+    beforeStudyId: string | null,
+  ) {
+    const before = data.value
+    const current = before.find((s) => s.id === studyId)
+    if (!current) return
+
+    // ARCHIVED keeps newest on top and is never reordered (FEATURE-0005 §4).
+    const archiving = toStatus === 'ARCHIVED'
+    const anchor = archiving
+      ? (before.find((s) => s.status === 'ARCHIVED' && s.id !== studyId)?.id ?? null)
+      : beforeStudyId
+
+    const fromIndex = before.filter((s) => s.status === current.status).findIndex((s) => s.id === studyId)
+    data.value = before.map((s) => (s.id === studyId ? { ...s, status: toStatus } : s))
+    reorderInBoard(studyId, anchor)
+
+    const input: UpdateStudyInput = {}
+    if (toStatus !== current.status) input.status = toStatus
+    if (!archiving) {
+      const toIndex = data.value
+        .filter((s) => s.status === toStatus)
+        .findIndex((s) => s.id === studyId)
+      if (input.status || toIndex !== fromIndex) input.position = toIndex
+    }
+    if (input.status === undefined && input.position === undefined) {
+      data.value = before
+      return
+    }
+
+    try {
+      const updated = await studyService.update(studyId, input)
+      // A move never changes the routine: keep the structured fields we already have.
+      data.value = data.value.map((s) =>
+        s.id === studyId ? { ...updated, routine: s.routine } : s,
+      )
+    } catch (err) {
+      // Other moves may have landed meanwhile: resync with the server instead of a stale snapshot.
+      await fetchStudies().catch(() => {
+        data.value = before
+      })
+      throw err
+    }
+  }
+
   return {
     data,
     status,
@@ -117,6 +175,6 @@ export const useStudyListStore = defineStore('study-list', () => {
     createStudy,
     updateStudy,
     upsert,
-    reorderInBoard,
+    moveInBoard,
   }
 })

@@ -23,6 +23,8 @@ export type Study = {
   status: StudyStatus
   createdAt: string
   totalStudySeconds: number
+  /** 0-based index inside the column of its status (FEATURE-0005). */
+  position: number
 }
 
 export type User = {

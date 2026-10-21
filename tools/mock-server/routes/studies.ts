@@ -10,6 +10,7 @@ import {
   type StudyStatus,
   type WeekDay,
 } from '../db'
+import { STUDY_STATUSES, column, place } from '../board'
 import { json, problem, readJson, unauthorized, validationFailed, type Handler } from '../http'
 
 type RoutineInput = {
@@ -75,7 +76,10 @@ export const studyRoutes: Handler = async (req, path) => {
   if (!user) return unauthorized()
 
   if (req.method === 'GET' && path === '/studies') {
-    const items = db.studies.filter((s) => s.ownerId === user.id).map(toApi)
+    const items = db.studies
+      .filter((s) => s.ownerId === user.id)
+      .sort((a, b) => a.position - b.position)
+      .map(toApi)
     return json({ items })
   }
 
@@ -109,8 +113,11 @@ export const studyRoutes: Handler = async (req, path) => {
       status: nextStatus,
       createdAt: new Date().toISOString(),
       totalStudySeconds: 0,
+      position: 0,
     }
     db.studies.unshift(study)
+    // New studies go on top of their column (FEATURE-0005 §3).
+    column(db.studies, user.id, nextStatus, study.id).forEach((s, i) => (s.position = i + 1))
     recordStudyCreation(user)
     return json(toApi(study), { status: 201 })
   }
@@ -129,44 +136,45 @@ export const studyRoutes: Handler = async (req, path) => {
       routine?: RoutineInput
       status?: StudyStatus
       totalStudySeconds?: number
+      position?: number
     }>(req)
 
     const hasTitle = body?.title !== undefined
     const hasObjective = body?.objective !== undefined
     const hasRoutine = body?.routine !== undefined
     const hasStatus = body?.status !== undefined
+    const hasPosition = body?.position !== undefined
     const hasTotalStudy =
       body?.totalStudySeconds !== undefined && body.totalStudySeconds !== null
-    if (!hasTitle && !hasObjective && !hasRoutine && !hasStatus && !hasTotalStudy) {
+    if (!hasTitle && !hasObjective && !hasRoutine && !hasStatus && !hasTotalStudy && !hasPosition) {
       return validationFailed()
     }
+    // Validate everything first so a rejected PATCH never changes data.
+    if (hasPosition && (!Number.isInteger(body!.position) || body!.position! < 0)) {
+      return validationFailed()
+    }
+    if (hasStatus && !STUDY_STATUSES.includes(body!.status!)) return validationFailed()
+    if (hasTitle && !body!.title?.trim()) return validationFailed()
+    if (hasObjective && !body!.objective?.trim()) return validationFailed()
+    const routine = hasRoutine ? normalizeRoutine(body!.routine) : null
+    if (hasRoutine && !routine) return validationFailed()
+    const totalStudy = Number(body?.totalStudySeconds)
+    if (hasTotalStudy && (!Number.isFinite(totalStudy) || totalStudy < 0)) return validationFailed()
+    const nextStatus = body?.status ?? study.status
+    const starting = nextStatus === 'STARTED' && study.status !== 'STARTED'
+    if (starting && startedCount(user.id) >= FREE_ENTITLEMENTS.limits.maxActiveStudies) {
+      return activeLimitReached()
+    }
 
-    if (hasTitle) {
-      if (!body!.title?.trim()) return validationFailed()
-      study.title = body!.title.trim()
+    if (hasTitle) study.title = body!.title!.trim()
+    if (hasObjective) study.objective = body!.objective!.trim()
+    if (routine) study.routine = routine
+    // Status change without position → top of the new column (FEATURE-0005 §2).
+    const moving = nextStatus !== study.status
+    if (moving || (hasPosition && nextStatus !== 'ARCHIVED')) {
+      place(db.studies, study, nextStatus, body?.position ?? (moving ? 0 : study.position))
     }
-    if (hasObjective) {
-      if (!body!.objective?.trim()) return validationFailed()
-      study.objective = body!.objective.trim()
-    }
-    if (hasRoutine) {
-      const routine = normalizeRoutine(body!.routine)
-      if (!routine) return validationFailed()
-      study.routine = routine
-    }
-    if (hasStatus) {
-      const nextStatus = body!.status!
-      const starting = nextStatus === 'STARTED' && study.status !== 'STARTED'
-      if (starting && startedCount(user.id) >= FREE_ENTITLEMENTS.limits.maxActiveStudies) {
-        return activeLimitReached()
-      }
-      study.status = nextStatus
-    }
-    if (hasTotalStudy) {
-      const value = Number(body!.totalStudySeconds)
-      if (!Number.isFinite(value) || value < 0) return validationFailed()
-      study.totalStudySeconds = Math.trunc(value)
-    }
+    if (hasTotalStudy) study.totalStudySeconds = Math.trunc(totalStudy)
     return json(toApi(study))
   }
 
