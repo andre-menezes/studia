@@ -36,3 +36,6 @@ Referências (ADRs / guidelines)
 |---|---|---|
 | [FEATURE-0001](./FEATURE-0001-study-creation-wizard.md) | Study creation wizard | Ready |
 | [FEATURE-0002](./FEATURE-0002-study-home-detail-edit.md) | Study home, detalhe e edição localizada | Accepted |
+| [FEATURE-0003](./FEATURE-0003-study-tasks-notes.md) | Tasks e Notes dentro do Study | Accepted |
+| [FEATURE-0004](./FEATURE-0004-sign-up-password-recovery.md) | Cadastro e recuperação de senha | Accepted |
+| [FEATURE-0005](./FEATURE-0005-board-order-persistence.md) | Ordem do board persistida | Accepted |
