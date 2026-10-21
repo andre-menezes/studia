@@ -170,6 +170,7 @@ paths:
     get:
       tags: [studies]
       summary: List studies for the current user
+      description: Ordered by `position` inside each status column (FEATURE-0005).
       operationId: listStudies
       security:
         - bearerAuth: []
@@ -844,6 +845,13 @@ components:
           description: >
             Accumulated seconds of study session time (excludes rest/break).
             Sum of the study's StudySessions; changes only through POST /studies/{studyId}/sessions (ADR-0010).
+        position:
+          type: integer
+          minimum: 0
+          description: >
+            0-based index inside the board column of its status (FEATURE-0005).
+            Dense per column. New studies (POST) and status changes without position go to 0 (top).
+            ARCHIVED is ordered by when each study was archived (latest on top), never by createdAt.
     CreateStudyRequest:
       type: object
       required: [title, objective, routine]
@@ -874,6 +882,12 @@ components:
           $ref: '#/components/schemas/StudyRoutine'
         status:
           $ref: '#/components/schemas/StudyStatus'
+        position:
+          type: integer
+          minimum: 0
+          description: >
+            Desired index in the target column (alone or with `status`); the server reindexes the others.
+            Ignored for ARCHIVED, which keeps the newest archived on top.
     StudySession:
       type: object
       required: [id, clientSessionId, studyId, startedAt, endedAt, studySeconds, createdAt]

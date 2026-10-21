@@ -10,6 +10,7 @@ import {
   type StudyStatus,
   type WeekDay,
 } from '../db'
+import { STUDY_STATUSES, column, place } from '../board'
 import { workspaceRoutes } from './workspace'
 import { sessionRoutes } from './sessions'
 import { json, problem, readJson, unauthorized, validationFailed, type Handler } from '../http'
@@ -77,7 +78,10 @@ export const studyRoutes: Handler = async (req, path) => {
   if (!user) return unauthorized()
 
   if (req.method === 'GET' && path === '/studies') {
-    const items = db.studies.filter((s) => s.ownerId === user.id).map(toApi)
+    const items = db.studies
+      .filter((s) => s.ownerId === user.id)
+      .sort((a, b) => a.position - b.position)
+      .map(toApi)
     return json({ items })
   }
 
@@ -111,8 +115,11 @@ export const studyRoutes: Handler = async (req, path) => {
       status: nextStatus,
       createdAt: new Date().toISOString(),
       totalStudySeconds: 0,
+      position: 0,
     }
     db.studies.unshift(study)
+    // New studies go on top of their column (FEATURE-0005 §3).
+    column(db.studies, user.id, nextStatus, study.id).forEach((s, i) => (s.position = i + 1))
     recordStudyCreation(user)
     return json(toApi(study), { status: 201 })
   }
@@ -145,37 +152,40 @@ export const studyRoutes: Handler = async (req, path) => {
       objective?: string
       routine?: RoutineInput
       status?: StudyStatus
+      position?: number
     }>(req)
 
     const hasTitle = body?.title !== undefined
     const hasObjective = body?.objective !== undefined
     const hasRoutine = body?.routine !== undefined
     const hasStatus = body?.status !== undefined
+    const hasPosition = body?.position !== undefined
     // totalStudySeconds is read-only (ADR-0010): a body with only that field is 422.
-    if (!hasTitle && !hasObjective && !hasRoutine && !hasStatus) {
+    if (!hasTitle && !hasObjective && !hasRoutine && !hasStatus && !hasPosition) {
       return validationFailed()
     }
+    // Validate everything first so a rejected PATCH never changes data.
+    if (hasPosition && (!Number.isInteger(body!.position) || body!.position! < 0)) {
+      return validationFailed()
+    }
+    if (hasStatus && !STUDY_STATUSES.includes(body!.status!)) return validationFailed()
+    if (hasTitle && !body!.title?.trim()) return validationFailed()
+    if (hasObjective && !body!.objective?.trim()) return validationFailed()
+    const routine = hasRoutine ? normalizeRoutine(body!.routine) : null
+    if (hasRoutine && !routine) return validationFailed()
+    const nextStatus = body?.status ?? study.status
+    const starting = nextStatus === 'STARTED' && study.status !== 'STARTED'
+    if (starting && startedCount(user.id) >= entitlementsOf(user).limits.maxActiveStudies) {
+      return activeLimitReached()
+    }
 
-    if (hasTitle) {
-      if (!body!.title?.trim()) return validationFailed()
-      study.title = body!.title.trim()
-    }
-    if (hasObjective) {
-      if (!body!.objective?.trim()) return validationFailed()
-      study.objective = body!.objective.trim()
-    }
-    if (hasRoutine) {
-      const routine = normalizeRoutine(body!.routine)
-      if (!routine) return validationFailed()
-      study.routine = routine
-    }
-    if (hasStatus) {
-      const nextStatus = body!.status!
-      const starting = nextStatus === 'STARTED' && study.status !== 'STARTED'
-      if (starting && startedCount(user.id) >= entitlementsOf(user).limits.maxActiveStudies) {
-        return activeLimitReached()
-      }
-      study.status = nextStatus
+    if (hasTitle) study.title = body!.title!.trim()
+    if (hasObjective) study.objective = body!.objective!.trim()
+    if (routine) study.routine = routine
+    // Status change without position → top of the new column (FEATURE-0005 §2).
+    const moving = nextStatus !== study.status
+    if (moving || (hasPosition && nextStatus !== 'ARCHIVED')) {
+      place(db.studies, study, nextStatus, body?.position ?? (moving ? 0 : study.position))
     }
     return json(toApi(study))
   }

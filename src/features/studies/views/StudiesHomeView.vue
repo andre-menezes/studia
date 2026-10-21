@@ -212,10 +212,7 @@ async function applyStatusChange(
 
   actionError.value = null;
   try {
-    if (fromStatus !== toStatus) {
-      await studies.updateStudy(studyId, { status: toStatus });
-    }
-    studies.reorderInBoard(studyId, beforeStudyId);
+    await studies.moveInBoard(studyId, toStatus, beforeStudyId);
   } catch (err) {
     actionError.value = err instanceof ApiError ? err.code : "INTERNAL_ERROR";
   }
