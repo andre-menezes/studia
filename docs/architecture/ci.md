@@ -13,12 +13,13 @@ Garantir que todo PR para `develop` (e `main`) passe pelas mesmas verificações
 
 - CD (deploy automático de ambientes) — guideline futura quando houver hospedagem definida.
 - Versionamento/release do app (tags, changelog) — continua em `open-decisions.md`.
-- E2E no CI — entra junto com o primeiro teste em `tests/e2e/` (`testing.md`).
 
 ## Regras
 
 1. O workflow roda em `pull_request` e `push` para `develop` e `main`.
-2. Etapas, nesta ordem: `bun install --frozen-lockfile` → `bun run typecheck` → `bun run test` → `bun run build` → `bun run build-storybook`.
+2. Dois jobs em paralelo:
+   - **Typecheck, test and build:** `bun install --frozen-lockfile` → `bun run typecheck` → `bun run test` → `bun run build` → `bun run build-storybook`.
+   - **E2E (Playwright):** `bun install --frozen-lockfile` → `bunx playwright install --with-deps chromium` → `bun run test:e2e`. Em falha, o relatório e os traces ficam como artifact `playwright-report` por 7 dias.
 3. A versão do Bun no CI é a mesma de `packageManager` em `package.json`; ao atualizar uma, atualize a outra.
 4. Lockfile desatualizado quebra o CI de propósito (`--frozen-lockfile`): rode `bun install` e commite `bun.lock`.
 5. PR com CI vermelho não é mergeado. Teste instável (flaky) é corrigido, nunca desativado (`testing.md`).
@@ -29,7 +30,7 @@ Garantir que todo PR para `develop` (e `main`) passe pelas mesmas verificações
 Configurar em **Settings → Branches** para `develop` e `main`:
 
 - Exigir PR antes do merge.
-- Exigir o status check **Typecheck, test and build** verde.
+- Exigir os status checks **Typecheck, test and build** e **E2E (Playwright)** verdes.
 - Bloquear push direto.
 
 ## Rodar localmente
@@ -38,6 +39,7 @@ Configurar em **Settings → Branches** para `develop` e `main`:
 bun run typecheck
 bun run test        # vitest run (uma vez)
 bun run test:watch  # modo watch durante o desenvolvimento
+bun run test:e2e    # Playwright: sobe mock (3100) e app (5180) sozinho
 bun run build
 ```
 
