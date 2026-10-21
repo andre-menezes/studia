@@ -25,6 +25,16 @@ export type Study = {
   totalStudySeconds: number
 }
 
+export type StudySession = {
+  id: string
+  clientSessionId: string
+  studyId: string
+  startedAt: string
+  endedAt: string
+  studySeconds: number
+  createdAt: string
+}
+
 export type User = {
   id: string
   email: string
@@ -52,6 +62,8 @@ export const db = {
   sessions: new Map<string, Session>(),
   resetTokens: new Map<string, ResetToken>(),
   studies: [] as Study[],
+  /** Newest last; the route sorts on read (ADR-0010). */
+  studySessions: [] as StudySession[],
   /** Key: `${userId}:${YYYY-MM}` in the user's time zone (ADR-0009). */
   studyCreationsUsed: new Map<string, number>(),
 }

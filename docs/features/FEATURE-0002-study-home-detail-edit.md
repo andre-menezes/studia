@@ -70,7 +70,7 @@ Home (lista / empty)
 - Iniciar o timer com Study ainda em `CREATED` também ativa o Study (`CREATED` → `STARTED`), mesmo fluxo de **Iniciar estudo** (incl. `limits.canActivateStudy` / `STUDY_ACTIVE_LIMIT_REACHED`); só então o countdown/cronômetro começa.
 - **Pomodoro** (opcional na rotina, só com Tempo > 00:00): ao concluir o bloco de estudo, inicia automaticamente o descanso configurado (padrão 5 min) com aviso visual e sonoro; ao fim do descanso, novo aviso e estado pronto para o próximo bloco.
 - Ao iniciar o timer fora dos `daysOfWeek` agendados: confirmação (“hoje não é dia de estudo / iniciar mesmo assim?”).
-- Acúmulo de `totalStudySeconds` (só tempo de estudo, sem descanso) via PATCH — métrica para ciclo futuro.
+- Acúmulo de `totalStudySeconds` (só tempo de estudo, sem descanso): cada bloco vira uma `StudySession` via `POST /studies/{id}/sessions` (ADR-0010); o total é somente leitura.
 - Tom assistente (organizar/incentivar), não punitivo.
 - Layout: `docs/architecture/layouts.md` (AppTopBar + canvas, sem sidebar obrigatória).
 - Loading/empty/error com `AppSpinner` / empty dedicada / `AppAlert`.

@@ -59,7 +59,7 @@ describe('useStudySessionTimer', () => {
     expect(onSignal).toHaveBeenCalledWith('studyComplete')
     expect(timer.phase.value).toBe('paused')
     expect(timer.sessionComplete.value).toBe(true)
-    expect(onCommitStudySeconds).toHaveBeenCalledWith(60)
+    expect(onCommitStudySeconds).toHaveBeenCalledWith(60, expect.anything())
   })
 
   it('auto-starts the rest after a Pomodoro block, then waits for the next block', () => {
@@ -83,15 +83,37 @@ describe('useStudySessionTimer', () => {
     timer.start()
     vi.advanceTimersByTime(30_000)
     timer.pause()
-    expect(onCommitStudySeconds).toHaveBeenCalledWith(30)
+    expect(onCommitStudySeconds).toHaveBeenCalledWith(30, expect.anything())
 
     timer.startRest()
     vi.advanceTimersByTime(60_000)
     timer.skipRest()
     vi.advanceTimersByTime(10_000)
     timer.pause()
-    expect(onCommitStudySeconds).toHaveBeenLastCalledWith(10)
+    expect(onCommitStudySeconds).toHaveBeenLastCalledWith(10, expect.anything())
     expect(timer.displayClock.value).toBe('00:09:20')
+  })
+
+  it('reports the wall-clock bounds of each committed block', () => {
+    vi.setSystemTime(new Date('2026-10-21T12:00:00Z'))
+    const { timer, onCommitStudySeconds } = setup({ hour: 0, minute: 10 })
+    timer.start()
+    vi.advanceTimersByTime(30_000)
+    timer.pause()
+
+    expect(onCommitStudySeconds).toHaveBeenCalledWith(30, {
+      startedAt: new Date('2026-10-21T12:00:00Z'),
+      endedAt: new Date('2026-10-21T12:00:30Z'),
+    })
+
+    vi.advanceTimersByTime(60_000) // paused time is not part of any block
+    timer.resume()
+    vi.advanceTimersByTime(5_000)
+    timer.pause()
+    expect(onCommitStudySeconds).toHaveBeenLastCalledWith(5, {
+      startedAt: new Date('2026-10-21T12:01:30Z'),
+      endedAt: new Date('2026-10-21T12:01:35Z'),
+    })
   })
 
   it('reset returns to the preset and flushes running study time', () => {
@@ -99,7 +121,7 @@ describe('useStudySessionTimer', () => {
     timer.start()
     vi.advanceTimersByTime(20_000)
     timer.reset()
-    expect(onCommitStudySeconds).toHaveBeenCalledWith(20)
+    expect(onCommitStudySeconds).toHaveBeenCalledWith(20, expect.anything())
     expect(timer.phase.value).toBe('idle')
     expect(timer.displayClock.value).toBe('00:05:00')
   })
@@ -109,6 +131,6 @@ describe('useStudySessionTimer', () => {
     timer.start()
     vi.advanceTimersByTime(15_000)
     wrapper.unmount()
-    expect(onCommitStudySeconds).toHaveBeenCalledWith(15)
+    expect(onCommitStudySeconds).toHaveBeenCalledWith(15, expect.anything())
   })
 })
