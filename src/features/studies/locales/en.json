@@ -38,13 +38,13 @@
       "changeStatus": "Change status",
       "editSubtitle": "Update only this field.",
       "statusHint": "Choose the current status for this Study.",
-      "tasksComingSoon": "Tasks and notes for this Study are coming soon.",
       "editTitles": {
         "title": "Edit name",
         "objective": "Edit objective",
         "routine": "Edit routine",
         "status": "Change status"
-      }
+      },
+      "workspaceReadOnly": "Archived Study: tasks and notes are read-only."
     },
     "status": {
       "CREATED": "Created",
@@ -158,6 +158,38 @@
     "quota": {
       "summary": "{used} of {limit} creations this month · renews on {date}",
       "limitReachedRenews": "You reached the monthly study creation limit. Renews on {date}."
+    },
+    "tasks": {
+      "title": "Tasks",
+      "progress": "{done} of {total} tasks done",
+      "loading": "Loading tasks",
+      "empty": "No tasks yet. Add the first one below.",
+      "emptyReadOnly": "This Study has no tasks.",
+      "addLabel": "New task",
+      "addPlaceholder": "What do you need to do? Press Enter to add",
+      "editLabel": "Task title",
+      "edit": "Edit “{title}”",
+      "moveUp": "Move “{title}” up",
+      "moveDown": "Move “{title}” down",
+      "remove": "Delete “{title}”",
+      "moved": "“{title}” moved to position {position} of {total}"
+    },
+    "notes": {
+      "title": "Notes",
+      "loading": "Loading notes",
+      "add": "New note",
+      "empty": "No notes yet.",
+      "emptyReadOnly": "This Study has no notes.",
+      "contentLabel": "Note",
+      "markdownHint": "Markdown works: **bold**, lists, [links](https://…).",
+      "save": "Save note",
+      "cancel": "Cancel",
+      "edit": "Edit note from {date}",
+      "remove": "Delete note from {date}",
+      "updatedAt": "Updated {date}",
+      "confirmTitle": "Delete this note?",
+      "confirmDescription": "The note will be removed and cannot be recovered.",
+      "confirmDelete": "Delete"
     }
   }
 }

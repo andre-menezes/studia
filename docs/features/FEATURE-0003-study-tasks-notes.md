@@ -37,7 +37,7 @@ POST   /studies/{studyId}/tasks       { title } → 201 Task (entra no fim)
 PATCH  /studies/{studyId}/tasks/{id}  { title?, done?, position? } → Task
 DELETE /studies/{studyId}/tasks/{id}            → 204
 
-GET    /studies/{studyId}/notes                 → { items } (mais recente primeiro)
+GET    /studies/{studyId}/notes                 → { items } (createdAt mais recente primeiro)
 POST   /studies/{studyId}/notes       { content } → 201 Note
 PATCH  /studies/{studyId}/notes/{id}  { content } → Note
 DELETE /studies/{studyId}/notes/{id}            → 204
@@ -54,7 +54,7 @@ DELETE /studies/{studyId}/notes/{id}            → 204
 4. Editar título: inline; Esc cancela.
 5. Reordenar: botões mover para cima/para baixo (acessível por teclado). Drag-and-drop é opcional.
 6. Excluir task: exclusão direta, sem confirmação (é barata de recriar). "Desfazer" fica fora do MVP.
-7. Nota: editor `AppTextarea`; renderização Markdown com **HTML desabilitado** (sem HTML cru) e links só `http(s)`.
+7. Nota: editor `AppTextarea`; renderização Markdown com **HTML desabilitado** (sem HTML cru), **sem imagens** (evita carregar recursos de terceiros) e links só `http(s)`.
 8. Excluir nota: `AppConfirmDialog` (texto livre pode ser longo).
 9. Study `ARCHIVED`: tasks e notes em **somente leitura**.
 10. Contador "3 de 5 tarefas concluídas" no cabeçalho da seção.
