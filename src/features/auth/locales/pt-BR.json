@@ -5,7 +5,47 @@
       "email": "E-mail",
       "emailPlaceholder": "voce@studia.app",
       "password": "Senha",
-      "submit": "Entrar"
+      "submit": "Entrar",
+      "forgotPassword": "Esqueci minha senha",
+      "noAccount": "Ainda não tem conta?",
+      "signUp": "Criar conta"
+    },
+    "signup": {
+      "title": "Criar conta",
+      "subtitle": "Comece a organizar seus Estudos em poucos segundos.",
+      "displayName": "Nome",
+      "passwordHint": "Mínimo de {min} caracteres.",
+      "showPassword": "Mostrar senha",
+      "submit": "Criar conta",
+      "hasAccount": "Já tem conta?",
+      "signIn": "Entrar",
+      "errors": {
+        "displayName": "Informe seu nome.",
+        "email": "Informe um e-mail válido.",
+        "password": "A senha precisa ter pelo menos {min} caracteres."
+      }
+    },
+    "forgot": {
+      "title": "Esqueci minha senha",
+      "subtitle": "Informe seu e-mail e enviaremos um link para criar uma nova senha.",
+      "submit": "Enviar link",
+      "sent": "Se houver uma conta com esse e-mail, enviamos um link para redefinir a senha. Ele vale por 1 hora.",
+      "backToLogin": "Voltar para o login",
+      "errors": {
+        "email": "Informe um e-mail válido."
+      }
+    },
+    "reset": {
+      "title": "Nova senha",
+      "subtitle": "Escolha uma nova senha para sua conta.",
+      "password": "Nova senha",
+      "confirmation": "Confirmar nova senha",
+      "submit": "Salvar nova senha",
+      "requestNew": "Pedir um novo link",
+      "successNotice": "Senha redefinida. Entre com a nova senha.",
+      "errors": {
+        "mismatch": "As senhas não coincidem."
+      }
     }
   }
 }

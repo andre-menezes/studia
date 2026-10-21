@@ -19,6 +19,14 @@ export function configureHttpAuth(accessor: TokenAccessor) {
 
 let refreshPromise: Promise<string | null> | null = null
 
+/** Endpoints whose 401 means bad input, not an expired access token. */
+const PUBLIC_AUTH_PATHS = [
+  '/auth/refresh',
+  '/auth/login',
+  '/auth/register',
+  '/auth/password/',
+]
+
 const raw = ofetch.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   credentials: 'include',
@@ -63,7 +71,7 @@ export async function http<T>(url: string, options: Parameters<typeof raw<T>>[1]
     return await raw<T>(url, { ...options, headers })
   } catch (error) {
     const status = (error as { status?: number }).status
-    const isAuthPath = url.includes('/auth/refresh') || url.includes('/auth/login')
+    const isAuthPath = PUBLIC_AUTH_PATHS.some((path) => url.includes(path))
     if (status !== 401 || isAuthPath) throw toApiError(error)
 
     const newToken = await refreshAccessToken()

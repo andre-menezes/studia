@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { AppAlert, AppButton, AppTextField } from "@/shared/ui";
-import logoDark from "@/shared/assets/brand/logo_studia_dark.svg";
-import logoLight from "@/shared/assets/brand/logo_studia_light.svg";
+import AuthCard from "./AuthCard.vue";
 
 defineProps<{
   appName: string;
@@ -15,6 +14,7 @@ defineProps<{
   loadingLabel: string;
   pending: boolean;
   errorMessage: string | null;
+  noticeMessage?: string | null;
 }>();
 
 const emit = defineEmits<{
@@ -25,27 +25,12 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div
-    class="w-full max-w-sm overflow-hidden rounded-[20px] border border-border bg-surface shadow-card"
-  >
-    <div class="flex flex-col items-center gap-3 px-6 pt-8 text-center">
-      <picture>
-        <source media="(prefers-color-scheme: dark)" :srcset="logoDark" />
-        <img
-          :src="logoLight"
-          :alt="appName"
-          class="h-10 w-auto max-w-[12rem] object-contain"
-          width="200"
-          height="48"
-        />
-      </picture>
-      <p class="text-sm text-muted">{{ subtitle }}</p>
-    </div>
+  <AuthCard :app-name="appName" :subtitle="subtitle">
+    <form class="flex flex-col gap-4" @submit.prevent="emit('submit')">
+      <AppAlert v-if="noticeMessage" type="success">
+        {{ noticeMessage }}
+      </AppAlert>
 
-    <form
-      class="flex flex-col gap-4 px-6 py-6"
-      @submit.prevent="emit('submit')"
-    >
       <AppTextField
         :model-value="email"
         type="email"
@@ -79,5 +64,9 @@ const emit = defineEmits<{
         {{ pending ? loadingLabel : submitLabel }}
       </AppButton>
     </form>
-  </div>
+
+    <template v-if="$slots.footer" #footer>
+      <slot name="footer" />
+    </template>
+  </AuthCard>
 </template>

@@ -7,6 +7,8 @@ import { useAuthStore } from './authStore'
 vi.mock('../services/authService', () => ({
   authService: {
     login: vi.fn(),
+    register: vi.fn(),
+    resetPassword: vi.fn(),
     refresh: vi.fn(),
     logout: vi.fn(),
     me: vi.fn(),
@@ -59,6 +61,31 @@ describe('authStore entitlements', () => {
     const auth = useAuthStore()
     await auth.login('user@test.local', 'password')
     expect(auth.canCreateStudy()).toBe(false)
+  })
+
+  it('starts a session after registering', async () => {
+    vi.mocked(authService.register).mockResolvedValue(session({ remaining: 10 }))
+    const auth = useAuthStore()
+    await auth.register({
+      email: 'user@test.local',
+      password: 'password',
+      displayName: 'Test User',
+      timeZone: 'America/Sao_Paulo',
+    })
+    expect(auth.isAuthenticated).toBe(true)
+    expect(auth.accessToken).toBe('token')
+    expect(auth.canCreateStudy()).toBe(true)
+  })
+
+  it('clears the local session after a password reset', async () => {
+    vi.mocked(authService.login).mockResolvedValue(session())
+    vi.mocked(authService.resetPassword).mockResolvedValue(undefined)
+    const auth = useAuthStore()
+    await auth.login('user@test.local', 'password')
+
+    await auth.resetPassword({ token: 'reset_token', password: 'new-password' })
+    expect(auth.status).toBe('UNAUTHENTICATED')
+    expect(auth.accessToken).toBeNull()
   })
 
   it('falls back to UNAUTHENTICATED when the bootstrap refresh fails', async () => {

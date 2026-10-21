@@ -15,7 +15,7 @@ router.beforeEach((to) => {
   if (!to.meta.public && !auth.isAuthenticated) {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
-  if (to.name === 'login' && auth.isAuthenticated) {
+  if (to.meta.guestOnly && auth.isAuthenticated) {
     return { name: 'studies-home' }
   }
   return true

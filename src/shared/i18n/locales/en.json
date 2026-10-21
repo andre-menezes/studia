@@ -16,6 +16,9 @@
     "VALIDATION_FAILED": "Please check the submitted data.",
     "STUDY_NOT_FOUND": "Study not found.",
     "STUDY_CREATE_LIMIT_REACHED": "You reached the monthly study creation limit.",
-    "STUDY_ACTIVE_LIMIT_REACHED": "You reached the started studies limit."
+    "STUDY_ACTIVE_LIMIT_REACHED": "You reached the started studies limit.",
+    "AUTH_EMAIL_TAKEN": "An account with this email already exists.",
+    "AUTH_PASSWORD_TOO_WEAK": "The password does not meet the minimum requirements.",
+    "AUTH_RESET_TOKEN_INVALID": "This reset link is invalid or has expired."
   }
 }

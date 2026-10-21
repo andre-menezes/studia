@@ -5,7 +5,47 @@
       "email": "Email",
       "emailPlaceholder": "you@studia.app",
       "password": "Password",
-      "submit": "Sign in"
+      "submit": "Sign in",
+      "forgotPassword": "Forgot my password",
+      "noAccount": "Don't have an account?",
+      "signUp": "Create account"
+    },
+    "signup": {
+      "title": "Create account",
+      "subtitle": "Start organizing your Studies in a few seconds.",
+      "displayName": "Name",
+      "passwordHint": "At least {min} characters.",
+      "showPassword": "Show password",
+      "submit": "Create account",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "errors": {
+        "displayName": "Enter your name.",
+        "email": "Enter a valid email.",
+        "password": "The password must have at least {min} characters."
+      }
+    },
+    "forgot": {
+      "title": "Forgot my password",
+      "subtitle": "Enter your email and we will send you a link to create a new password.",
+      "submit": "Send link",
+      "sent": "If an account exists for this email, we sent a link to reset the password. It is valid for 1 hour.",
+      "backToLogin": "Back to sign in",
+      "errors": {
+        "email": "Enter a valid email."
+      }
+    },
+    "reset": {
+      "title": "New password",
+      "subtitle": "Choose a new password for your account.",
+      "password": "New password",
+      "confirmation": "Confirm new password",
+      "submit": "Save new password",
+      "requestNew": "Request a new link",
+      "successNotice": "Password reset. Sign in with the new password.",
+      "errors": {
+        "mismatch": "Passwords do not match."
+      }
     }
   }
 }

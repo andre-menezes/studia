@@ -1,4 +1,7 @@
 import { expect, type Page } from '@playwright/test'
+import { MOCK_PORT } from './ports'
+
+export const MOCK_API_URL = `http://localhost:${MOCK_PORT}/api/v1`
 
 /** Seed user of tools/mock-server (DX only, never a real account). */
 export const SEED_USER = {

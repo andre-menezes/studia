@@ -3,7 +3,11 @@ import { computed, ref } from 'vue'
 import { configureHttpAuth } from '@/shared/http'
 import type { SessionStatus } from '@/types/auth'
 import type { Entitlements, Plan, Usage, User } from '@/types/entitlements'
-import { authService } from '../services/authService'
+import {
+  authService,
+  type RegisterBody,
+  type ResetPasswordBody,
+} from '../services/authService'
 
 export const useAuthStore = defineStore('auth', () => {
   const status = ref<SessionStatus>('UNKNOWN')
@@ -64,6 +68,21 @@ export const useAuthStore = defineStore('auth', () => {
     applySession(session)
   }
 
+  async function register(body: RegisterBody) {
+    const session = await authService.register(body)
+    applySession(session)
+  }
+
+  function requestPasswordReset(email: string) {
+    return authService.forgotPassword(email)
+  }
+
+  /** Server revokes every session, so the local one is cleared too. */
+  async function resetPassword(body: ResetPasswordBody) {
+    await authService.resetPassword(body)
+    clearSession()
+  }
+
   async function logout() {
     try {
       await authService.logout()
@@ -98,6 +117,9 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     initSession,
     login,
+    register,
+    requestPasswordReset,
+    resetPassword,
     logout,
     can,
     canCreateStudy,
