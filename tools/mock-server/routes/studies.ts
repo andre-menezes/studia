@@ -10,6 +10,7 @@ import {
   type StudyStatus,
   type WeekDay,
 } from '../db'
+import { workspaceRoutes } from './workspace'
 import { sessionRoutes } from './sessions'
 import { json, problem, readJson, unauthorized, validationFailed, type Handler } from '../http'
 
@@ -114,6 +115,14 @@ export const studyRoutes: Handler = async (req, path) => {
     db.studies.unshift(study)
     recordStudyCreation(user)
     return json(toApi(study), { status: 201 })
+  }
+
+  const workspaceMatch = path.match(/^\/studies\/([^/]+)\/(tasks|notes)(?:\/([^/]+))?$/)
+  if (workspaceMatch) {
+    const [, studyId, kind, itemId] = workspaceMatch
+    const owned = db.studies.find((s) => s.id === studyId && s.ownerId === user.id)
+    if (!owned) return problem(404, 'STUDY_NOT_FOUND', 'Not found')
+    return workspaceRoutes(req, owned, kind as 'tasks' | 'notes', itemId)
   }
 
   const sessionsMatch = path.match(/^\/studies\/([^/]+)\/sessions$/)
