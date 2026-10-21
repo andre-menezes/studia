@@ -20,6 +20,11 @@
     "AUTH_EMAIL_TAKEN": "An account with this email already exists.",
     "AUTH_PASSWORD_TOO_WEAK": "The password does not meet the minimum requirements.",
     "AUTH_RESET_TOKEN_INVALID": "This reset link is invalid or has expired.",
+    "TASK_NOT_FOUND": "Task not found.",
+    "NOTE_NOT_FOUND": "Note not found.",
+    "STUDY_READ_ONLY": "This Study is archived and cannot be changed.",
+    "TASK_LIMIT_REACHED": "This Study reached the maximum of 200 tasks.",
+    "NOTE_LIMIT_REACHED": "This Study reached the maximum of 100 notes.",
     "BILLING_ALREADY_PREMIUM": "You are already Premium.",
     "BILLING_NOTHING_TO_CANCEL": "There is no card subscription to cancel."
   }

@@ -16,10 +16,14 @@ import StudiesAppBar from "../components/StudiesAppBar.vue";
 import StudyEditFieldDialog, {
   type StudyEditField,
 } from "../components/StudyEditFieldDialog.vue";
+import StudyNotesSection from "../components/StudyNotesSection.vue";
 import StudySessionTimer from "../components/StudySessionTimer.vue";
+import StudyTasksSection from "../components/StudyTasksSection.vue";
+import type { StudyBlock } from "../composables/useStudySessionTimer";
 import { canShowSessionTimer } from "../domain/studyRoutine";
 import { useStudyDetailStore } from "../stores/studyDetailStore";
 import { useStudyListStore } from "../stores/studyListStore";
+import { useStudyWorkspaceStore } from "../stores/studyWorkspaceStore";
 
 const props = defineProps<{
   studyId: string;
@@ -30,6 +34,7 @@ const router = useRouter();
 const auth = useAuthStore();
 const detail = useStudyDetailStore();
 const list = useStudyListStore();
+const workspace = useStudyWorkspaceStore();
 
 const loggingOut = ref(false);
 const loadError = ref<string | null>(null);
@@ -56,6 +61,8 @@ const canActivate = computed(() => {
   return limits.canActivateStudy(list.startedCount);
 });
 
+const workspaceReadOnly = computed(() => study.value?.status === "ARCHIVED");
+
 const showSessionTimer = computed(
   () => study.value != null && canShowSessionTimer(study.value.status),
 );
@@ -79,6 +86,8 @@ const editErrorMessage = computed(() =>
 
 async function load() {
   loadError.value = null;
+  // Tasks/notes load in parallel and keep their own errors (FEATURE-0003 §1).
+  void workspace.load(props.studyId);
   try {
     await detail.fetchById(props.studyId);
   } catch (err) {
@@ -102,6 +111,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   detail.clear();
+  workspace.clear();
 });
 
 function openEdit(field: StudyEditField) {
@@ -126,14 +136,14 @@ async function onSave(payload: UpdateStudyInput) {
   }
 }
 
-async function onCommitStudySeconds(deltaSeconds: number) {
+async function onCommitStudySeconds(deltaSeconds: number, block: StudyBlock) {
   if (!study.value || deltaSeconds <= 0) return;
-  const nextTotal = (study.value.totalStudySeconds ?? 0) + deltaSeconds;
-  try {
-    await detail.update(study.value.id, { totalStudySeconds: nextTotal });
-  } catch {
-    /* métrica best-effort; não bloquear o timer */
-  }
+  // Best-effort: failures stay queued in the store and never block the timer.
+  await detail.recordSession(study.value.id, {
+    startedAt: block.startedAt.toISOString(),
+    endedAt: block.endedAt.toISOString(),
+    studySeconds: deltaSeconds,
+  });
 }
 
 /**
@@ -370,11 +380,14 @@ function statusLabel(status: StudyStatus) {
             </AppButton>
           </article>
 
-          <article
-            class="rounded-[20px] bg-surface/60 px-6 py-5 text-sm text-muted shadow-card"
+          <p
+            v-if="workspaceReadOnly"
+            class="rounded-[20px] bg-surface/60 px-6 py-3 text-sm text-muted"
           >
-            {{ t("studies.detail.tasksComingSoon") }}
-          </article>
+            {{ t("studies.detail.workspaceReadOnly") }}
+          </p>
+          <StudyTasksSection :read-only="workspaceReadOnly" />
+          <StudyNotesSection :read-only="workspaceReadOnly" />
         </section>
       </template>
     </div>

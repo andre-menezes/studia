@@ -26,7 +26,7 @@ export type Study = {
   routine: StudyRoutine
   status: StudyStatus
   createdAt: string
-  /** Accumulated study session seconds (excludes rest). */
+  /** Accumulated study seconds, derived by the server from sessions (read-only). */
   totalStudySeconds?: number
 }
 
@@ -42,7 +42,25 @@ export type UpdateStudyInput = {
   objective?: string
   routine?: StudyRoutine
   status?: StudyStatus
-  totalStudySeconds?: number
+}
+
+/** One uninterrupted study block, never rest (ADR-0010). */
+export type StudySession = {
+  id: string
+  clientSessionId: string
+  studyId: string
+  startedAt: string
+  endedAt: string
+  studySeconds: number
+  createdAt: string
+}
+
+export type CreateStudySessionInput = {
+  /** Client-generated id so a retried block is never counted twice. */
+  clientSessionId: string
+  startedAt: string
+  endedAt: string
+  studySeconds: number
 }
 
 /** Board column order on the home screen. */

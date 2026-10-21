@@ -13,9 +13,15 @@ export type SessionTimerPhase = 'idle' | 'studying' | 'paused' | 'resting'
 
 export type SessionTimerSignal = 'studyComplete' | 'restComplete'
 
+/** Wall-clock bounds of a committed study block (ADR-0010). */
+export type StudyBlock = {
+  startedAt: Date
+  endedAt: Date
+}
+
 type Options = {
-  /** Called with newly completed study seconds (never rest). */
-  onCommitStudySeconds?: (deltaSeconds: number) => void
+  /** Called with newly completed study seconds (never rest) and the block bounds. */
+  onCommitStudySeconds?: (deltaSeconds: number, block: StudyBlock) => void
   /** Fired when a study or rest block finishes (for UI/sound). */
   onSignal?: (signal: SessionTimerSignal) => void
   pomodoro?: Ref<StudyPomodoro | null | undefined>
@@ -42,6 +48,8 @@ export function useStudySessionTimer(
   let intervalId: ReturnType<typeof setInterval> | null = null
   let restRemaining = 0
   let lastFlushedElapsed = 0
+  /** Start of the current uninterrupted studying segment. */
+  let segmentStartedAt: number | null = null
 
   const hasPreset = computed(() =>
     preset.value ? isDurationDefined(preset.value) : false,
@@ -96,9 +104,15 @@ export function useStudySessionTimer(
 
   function flushStudySeconds() {
     const delta = studyElapsed.value - lastFlushedElapsed
+    const endedAt = Date.now()
+    const startedAt = segmentStartedAt ?? endedAt - delta * 1000
+    segmentStartedAt = null
     if (delta > 0) {
       lastFlushedElapsed = studyElapsed.value
-      options.onCommitStudySeconds?.(delta)
+      options.onCommitStudySeconds?.(delta, {
+        startedAt: new Date(startedAt),
+        endedAt: new Date(endedAt),
+      })
     }
   }
 
@@ -220,6 +234,7 @@ export function useStudySessionTimer(
       }
     }
     phase.value = 'studying'
+    segmentStartedAt = Date.now()
     startTick()
   }
 
@@ -281,6 +296,7 @@ export function useStudySessionTimer(
       displaySeconds.value = studyElapsed.value
     }
     phase.value = 'studying'
+    segmentStartedAt = Date.now()
     startTick()
   }
 

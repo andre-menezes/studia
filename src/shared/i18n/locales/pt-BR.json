@@ -20,6 +20,11 @@
     "AUTH_EMAIL_TAKEN": "Já existe uma conta com esse e-mail.",
     "AUTH_PASSWORD_TOO_WEAK": "A senha não atende aos requisitos mínimos.",
     "AUTH_RESET_TOKEN_INVALID": "Este link de redefinição é inválido ou expirou.",
+    "TASK_NOT_FOUND": "Tarefa não encontrada.",
+    "NOTE_NOT_FOUND": "Nota não encontrada.",
+    "STUDY_READ_ONLY": "Este Estudo está arquivado e não pode ser alterado.",
+    "TASK_LIMIT_REACHED": "Este Estudo atingiu o máximo de 200 tarefas.",
+    "NOTE_LIMIT_REACHED": "Este Estudo atingiu o máximo de 100 notas.",
     "BILLING_ALREADY_PREMIUM": "Você já é Premium.",
     "BILLING_NOTHING_TO_CANCEL": "Não há assinatura no cartão para cancelar."
   }

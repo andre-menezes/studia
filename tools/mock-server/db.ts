@@ -32,6 +32,34 @@ export type Study = {
   totalStudySeconds: number
 }
 
+export type Task = {
+  id: string
+  studyId: string
+  title: string
+  done: boolean
+  position: number
+  createdAt: string
+  completedAt?: string
+}
+
+export type Note = {
+  id: string
+  studyId: string
+  content: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type StudySession = {
+  id: string
+  clientSessionId: string
+  studyId: string
+  startedAt: string
+  endedAt: string
+  studySeconds: number
+  createdAt: string
+}
+
 export type User = {
   id: string
   email: string
@@ -72,6 +100,11 @@ export const db = {
   sessions: new Map<string, Session>(),
   resetTokens: new Map<string, ResetToken>(),
   studies: [] as Study[],
+  /** FEATURE-0003: `position` is kept dense (0..n-1) per study. */
+  tasks: [] as Task[],
+  notes: [] as Note[],
+  /** Newest last; the route sorts on read (ADR-0010). */
+  studySessions: [] as StudySession[],
   subscriptions: new Map<string, Subscription>(),
   /** Pending hosted checkouts by id (stands in for Mercado Pago preferences). */
   checkouts: new Map<string, { userId: string; method: BillingMethod; createdAt: number }>(),

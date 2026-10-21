@@ -40,13 +40,13 @@
       "changeStatus": "Alterar status",
       "editSubtitle": "Atualize só este campo.",
       "statusHint": "Escolha o status atual deste Estudo.",
-      "tasksComingSoon": "Tasks e notas deste Estudo chegam em breve.",
       "editTitles": {
         "title": "Editar nome",
         "objective": "Editar objetivo",
         "routine": "Editar rotina",
         "status": "Alterar status"
-      }
+      },
+      "workspaceReadOnly": "Estudo arquivado: tarefas e notas ficam só para leitura."
     },
     "status": {
       "CREATED": "Criado",
@@ -160,6 +160,38 @@
     "quota": {
       "summary": "{used} de {limit} criações este mês · renova em {date}",
       "limitReachedRenews": "Você atingiu o limite mensal de criação de Estudos. Renova em {date}."
+    },
+    "tasks": {
+      "title": "Tarefas",
+      "progress": "{done} de {total} tarefas concluídas",
+      "loading": "Carregando tarefas",
+      "empty": "Nenhuma tarefa ainda. Adicione a primeira abaixo.",
+      "emptyReadOnly": "Este Estudo não tem tarefas.",
+      "addLabel": "Nova tarefa",
+      "addPlaceholder": "O que você precisa fazer? Enter para adicionar",
+      "editLabel": "Título da tarefa",
+      "edit": "Editar “{title}”",
+      "moveUp": "Mover “{title}” para cima",
+      "moveDown": "Mover “{title}” para baixo",
+      "remove": "Excluir “{title}”",
+      "moved": "“{title}” movida para a posição {position} de {total}"
+    },
+    "notes": {
+      "title": "Notas",
+      "loading": "Carregando notas",
+      "add": "Nova nota",
+      "empty": "Nenhuma nota ainda.",
+      "emptyReadOnly": "Este Estudo não tem notas.",
+      "contentLabel": "Nota",
+      "markdownHint": "Aceita Markdown: **negrito**, listas, [links](https://…).",
+      "save": "Salvar nota",
+      "cancel": "Cancelar",
+      "edit": "Editar nota de {date}",
+      "remove": "Excluir nota de {date}",
+      "updatedAt": "Atualizada em {date}",
+      "confirmTitle": "Excluir esta nota?",
+      "confirmDescription": "A nota será removida e não poderá ser recuperada.",
+      "confirmDelete": "Excluir"
     }
   }
 }

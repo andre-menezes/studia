@@ -262,6 +262,285 @@ paths:
           $ref: '#/components/responses/Problem'
         '422':
           $ref: '#/components/responses/Problem'
+  /studies/{studyId}/sessions:
+    get:
+      tags: [studies]
+      summary: List study sessions, newest first (ADR-0010)
+      operationId: listStudySessions
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/studyId'
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 50
+      responses:
+        '200':
+          description: Sessions of the study
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StudySession'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+    post:
+      tags: [studies]
+      summary: Record one study block of the session timer (ADR-0010)
+      description: >
+        Rest time never counts. The server checks
+        0 < studySeconds ≤ (endedAt − startedAt) + 5 s and adds studySeconds to Study.totalStudySeconds.
+        Idempotent per clientSessionId: a repeated block answers 200 with the saved session and is not counted again.
+      operationId: createStudySession
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/studyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStudySessionRequest'
+      responses:
+        '201':
+          description: Session recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySession'
+        '200':
+          description: Same clientSessionId already recorded (retry); nothing changes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudySession'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+  /studies/{studyId}/tasks:
+    get:
+      tags: [studies]
+      summary: List tasks of a study, by position (FEATURE-0003)
+      operationId: listTasks
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/studyId'
+      responses:
+        '200':
+          description: Tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+    post:
+      tags: [studies]
+      summary: Add a task at the end of the list
+      operationId: createTask
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/studyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+      responses:
+        '201':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+  /studies/{studyId}/tasks/{taskId}:
+    patch:
+      tags: [studies]
+      summary: Rename, complete or move a task
+      operationId: updateTask
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/studyId'
+        - $ref: '#/components/parameters/taskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskRequest'
+      responses:
+        '200':
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+    delete:
+      tags: [studies]
+      summary: Delete a task; the others are reindexed
+      operationId: deleteTask
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/studyId'
+        - $ref: '#/components/parameters/taskId'
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+  /studies/{studyId}/notes:
+    get:
+      tags: [studies]
+      summary: List notes of a study, newest createdAt first (FEATURE-0003)
+      operationId: listNotes
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/studyId'
+      responses:
+        '200':
+          description: Notes
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Note'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+    post:
+      tags: [studies]
+      summary: Add a note
+      operationId: createNote
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/studyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteContentRequest'
+      responses:
+        '201':
+          description: Note created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+  /studies/{studyId}/notes/{noteId}:
+    patch:
+      tags: [studies]
+      summary: Replace the content of a note
+      operationId: updateNote
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/studyId'
+        - $ref: '#/components/parameters/noteId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteContentRequest'
+      responses:
+        '200':
+          description: Note updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+    delete:
+      tags: [studies]
+      summary: Delete a note
+      operationId: deleteNote
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/studyId'
+        - $ref: '#/components/parameters/noteId'
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
   /billing/subscription:
     get:
       tags: [billing]
@@ -346,6 +625,20 @@ components:
   parameters:
     studyId:
       name: studyId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    taskId:
+      name: taskId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    noteId:
+      name: noteId
       in: path
       required: true
       schema:
@@ -547,9 +840,10 @@ components:
         totalStudySeconds:
           type: integer
           minimum: 0
+          readOnly: true
           description: >
             Accumulated seconds of study session time (excludes rest/break).
-            Used for dedication metrics across the study lifecycle.
+            Sum of the study's StudySessions; changes only through POST /studies/{studyId}/sessions (ADR-0010).
     CreateStudyRequest:
       type: object
       required: [title, objective, routine]
@@ -580,10 +874,133 @@ components:
           $ref: '#/components/schemas/StudyRoutine'
         status:
           $ref: '#/components/schemas/StudyStatus'
-        totalStudySeconds:
+    StudySession:
+      type: object
+      required: [id, clientSessionId, studyId, startedAt, endedAt, studySeconds, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        clientSessionId:
+          type: string
+          format: uuid
+        studyId:
+          type: string
+          format: uuid
+        startedAt:
+          type: string
+          format: date-time
+        endedAt:
+          type: string
+          format: date-time
+        studySeconds:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+    CreateStudySessionRequest:
+      type: object
+      required: [clientSessionId, startedAt, endedAt, studySeconds]
+      properties:
+        clientSessionId:
+          type: string
+          format: uuid
+          description: Generated by the client per block; makes retries safe
+        startedAt:
+          type: string
+          format: date-time
+          description: Wall-clock start of the block (study, not rest)
+        endedAt:
+          type: string
+          format: date-time
+        studySeconds:
+          type: integer
+          minimum: 1
+          description: Seconds studied in the block; at most endedAt − startedAt + 5 s
+    Task:
+      type: object
+      required: [id, studyId, title, done, position, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        studyId:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        done:
+          type: boolean
+        position:
           type: integer
           minimum: 0
-          description: Accumulated study seconds (excludes rest)
+          description: 0-based order inside the study; the server keeps it dense (0..n-1)
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+          description: Set while done is true
+    CreateTaskRequest:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Trimmed by the server; whitespace-only is 422
+    UpdateTaskRequest:
+      type: object
+      additionalProperties: false
+      description: >
+        Partial update. `position` is the desired 0-based index; values past the end move the task to the end,
+        and the server reindexes the other tasks. Archived studies answer 409 STUDY_READ_ONLY.
+      minProperties: 1
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        done:
+          type: boolean
+        position:
+          type: integer
+          minimum: 0
+    Note:
+      type: object
+      required: [id, studyId, content, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        studyId:
+          type: string
+          format: uuid
+        content:
+          type: string
+          description: Markdown. Clients render it with raw HTML disabled and only http(s) links.
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    NoteContentRequest:
+      type: object
+      additionalProperties: false
+      required: [content]
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 10000
+          description: Whitespace-only content is rejected with 422 VALIDATION_FAILED
     BillingMethod:
       type: string
       enum: [CARD, PIX]
