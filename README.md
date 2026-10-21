@@ -42,6 +42,7 @@ Abre em `http://localhost:6006`. Build estático: `bun run build-storybook`.
 
 ```bash
 bun run test        # Vitest (unit/component)
+bun run test:e2e    # Playwright (sobe mock + app sozinho)
 bun run typecheck
 ```
 

@@ -22,10 +22,8 @@ Definir a estratégia mínima de testes do app Vue Studia no MVP: o que testar, 
 
 ```text
 src/**/*.spec.ts              # unit / component colocalizados
-tests/e2e/**/*.spec.ts        # jornadas (Playwright ou equivalente escolhido na implantação)
+tests/e2e/**/*.spec.ts        # jornadas (Playwright)
 ```
-
-Criar `tests/e2e` só quando o primeiro E2E existir.
 
 ## Ferramentas
 
@@ -34,6 +32,9 @@ Criar `tests/e2e` só quando o primeiro E2E existir.
 - Comandos: `bun run test` (uma vez, usado no CI) e `bun run test:watch`. **Não** usar `bun test`: ele chama o runner nativo do Bun, que não entende `vi.mock` nem o ambiente `happy-dom`.
 - Timers: usar `vi.useFakeTimers()` em vez de esperar tempo real.
 - HTTP: mockar `ofetch` ou o `service` da feature; nunca chamar rede de verdade em unit test.
+- **Playwright** (`playwright.config.ts`) para E2E em `tests/e2e/`. `bun run test:e2e` sobe sozinho o mock (`MOCK_PORT=3100`) e o Vite (porta 5180), nunca as portas de dev (3000/5173). Só Chromium no MVP.
+- Login de E2E sempre via `tests/e2e/helpers.ts` (`login`, `SEED_USER`); o seed do mock não se repete nos specs (regra 7).
+- O mock guarda estado em memória durante a execução inteira: dados criados por um teste devem ter nome único (ex.: sufixo `Date.now()`), e nenhum teste pode depender de board vazio.
 - O CI roda os testes em todo PR (`docs/architecture/ci.md`).
 
 ## Regras
