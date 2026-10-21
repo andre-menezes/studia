@@ -61,9 +61,10 @@ Subscription {
 2. HTTP só em `features/billing/services`; estado em `billingStore`.
 3. Strings em `billing.*` (pt-BR + en). Preço formatado com `Intl.NumberFormat` em BRL.
 
-## Pendência de produto
+## Entitlements do Premium (decidido pelo Andre em 2026-10-21)
 
-- **Entitlements do Premium:** proposta padrão até o Andre definir — sem limite de Studies iniciados e de criações por mês (`limits` altos no `/auth/me`). Muda só no backend/mock.
+- **Sem limite** de Studies iniciados e de criações por mês. O `/auth/me` traz a capability `studies.unlimited` e `limits` com tetos técnicos de uso justo (não exibidos).
+- **Estatísticas** (pós-MVP, sobre as StudySessions da ADR-0010) ficam **só no Premium**, via capability `statistics.advanced`.
 
 ## Testes
 
