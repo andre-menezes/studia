@@ -43,14 +43,16 @@ Subscription {
 ```
 
 - `checkoutUrl` é a URL do Mercado Pago (*init_point*). O client só faz `window.location.assign`.
-- `checkout` com assinatura `ACTIVE` → 409 `BILLING_ALREADY_PREMIUM`.
+- `checkout` com Premium vigente (`ACTIVE` ou `CANCELED`) → 409 `BILLING_ALREADY_PREMIUM`, **exceto** renovação Pix (`method: PIX` sobre um Premium pago por Pix), que soma 30 dias ao fim do período.
+- Criar um checkout invalida os checkouts abertos anteriores do usuário. `PENDING` é derivado de um checkout aberto (expira em 30 min); não é gravado na assinatura.
+- Cartão `ACTIVE` renova sozinho: `currentPeriodEnd` é a próxima cobrança. Só `CANCELED` e Pix expiram (`EXPIRED`).
 - `cancel` sem assinatura de cartão ativa → 409 `BILLING_NOTHING_TO_CANCEL`. Cancelar mantém o Premium até `currentPeriodEnd`.
 - Mock: `checkoutUrl` aponta para uma página do próprio mock que simula aprovar/recusar e volta para `/billing/return`; a aprovação faz o papel do webhook.
 
 ## Comportamento
 
 1. Botões de assinar ficam desabilitados com `status = ACTIVE`; a tela mostra o estado atual.
-2. Retorno do checkout: até 10 tentativas de `/auth/me` (2 s entre elas). Plano mudou → sucesso e volta para a home; senão → "Pagamento em processamento", com link para Planos.
+2. Retorno do checkout: até 10 tentativas de `GET /billing/subscription` (2 s entre elas), comparando com o estado salvo antes do redirect. Sucesso só quando o Premium aparece ou o `currentPeriodEnd` avança (renovação); senão → "Pagamento em processamento", com link para Planos. O polling para ao sair da página.
 3. Premium por Pix mostra "válido até {data}" e o botão "Renovar com Pix" nos últimos 7 dias.
 4. Cancelar pede confirmação (`AppConfirmDialog`).
 5. Erros via `errors.<CODE>`.
