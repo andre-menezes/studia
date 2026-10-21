@@ -22,7 +22,7 @@ Evoluir a home de Estudos para um **dashboard orientado à ação** (“o que es
   - `PAUSED` → `STARTED` | `ARCHIVED`
   - `COMPLETED` / `ARCHIVED` → sem mudança de coluna; `COMPLETED` pode reordenar na própria coluna; cards `ARCHIVED` não são arrastáveis (nem reordenam).
   - Drop em `ARCHIVED` (vindo de outro status) exige confirmação (ação irreversível na UX).
-  - Reordenação por drag dentro da mesma coluna (exceto `ARCHIVED`; posição persistida na sessão do board).
+  - Reordenação por drag dentro da mesma coluna (exceto `ARCHIVED`; posição persistida no servidor, FEATURE-0005).
 
 ## Fora do escopo
 
